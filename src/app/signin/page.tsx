@@ -1,97 +1,106 @@
-import React, { useState } from "react";
-import { TextField, Button, Container, Typography, Box } from "@mui/material";
-import axios from "axios";
-import { useAuth } from "../../context/AuthContext";
+"use client";
 
-export default function SignIn() {
+import React, { useState } from "react";
+import axios from "axios";
+import {
+  Button,
+  TextField,
+  Select,
+  MenuItem,
+  InputLabel,
+  FormControl,
+} from "@mui/material";
+import { useConstants } from "@/context/ConstantsContext";
+import { useAuth } from "@/context/AuthContext";
+import { useRouter } from "next/navigation"; // Import useRouter for redirection
+
+export default function SignUp() {
+  const { BACKEND_URL } = useConstants();
+  //   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const router = useRouter(); // Initialize useRouter for redirection
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError("");
 
     try {
-      // Make a POST request to the backend for sign-in
-      const response = await axios.post(
-        `${process.env.BACKEND_URL}/api/account/login/`,
-        {
-          email,
-          password,
-        }
-      );
+      const response = await axios.post(`${BACKEND_URL}/api/account/login/`, {
+        email,
+        password,
+      });
 
       const { token, user } = response.data;
       login(token.access, user.user_type, user.id);
+
+      router.push("/home"); // Redirect user to login page
+
+      // Handle successful signup, e.g., redirect to the homepage or show a success message
     } catch (err) {
-      setError("Failed to sign in. Please check your credentials.");
-      console.error(err);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unknown error occurred.");
+      }
     }
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Typography component="h1" variant="h5">
+    <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-100">
+      <div className="bg-white rounded-lg shadow-md p-10 w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
           Sign In
-        </Typography>
-
-        {/* Error Message */}
-        {error && (
-          <Typography color="error" variant="body2" sx={{ mt: 2 }}>
-            {error}
-          </Typography>
-        )}
-
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-          <TextField
+        </h1>
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}{" "}
+        {/* Display error message */}
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* <TextField
+            id="name"
+            label="Full Name"
             variant="outlined"
-            margin="normal"
-            required
             fullWidth
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="rounded"
+          /> */}
+
+          <TextField
             id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
+            label="Email"
+            variant="outlined"
+            fullWidth
+            required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="rounded"
           />
 
           <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
             id="password"
-            autoComplete="current-password"
+            label="Password"
+            variant="outlined"
+            type="password"
+            fullWidth
+            required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="rounded"
           />
 
           <Button
             type="submit"
-            fullWidth
             variant="contained"
             color="primary"
-            sx={{ mt: 3, mb: 2 }}
+            fullWidth
+            className="mt-4"
           >
             Sign In
           </Button>
-        </Box>
-      </Box>
-    </Container>
+        </form>
+      </div>
+    </div>
   );
 }

@@ -11,19 +11,17 @@ import {
   FormControl,
 } from "@mui/material";
 import { useConstants } from "@/context/ConstantsContext";
-import { useAuth } from "@/context/AuthContext";
-import { useRouter } from "next/router"; // Import useRouter for redirection
+import { useRouter } from "next/navigation"; // Import useRouter for redirection
 
 export default function SignUp() {
   const { BACKEND_URL } = useConstants();
-  const { login } = useAuth();
   //   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [userType, setUserType] = useState("farmer");
   const [error, setError] = useState("");
-  //   const router = useRouter(); // Initialize useRouter for redirection
+  const router = useRouter(); // Initialize useRouter for redirection
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

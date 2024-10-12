@@ -12,6 +12,10 @@ export function AuthProvider({ children }) {
   const [userId, setUserId] = useState(null);
 
   const login = (newToken, newUserType, newUserId) => {
+    localStorage.setItem("token", newToken);
+    localStorage.setItem("usertype", newUserType);
+    localStorage.setItem("userId", newUserId);
+    localStorage.setItem("isAuthenticated", true);
     setToken(newToken);
     setUsertype(newUserType);
     setUserId(newUserId);
@@ -19,6 +23,10 @@ export function AuthProvider({ children }) {
   };
 
   const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("usertype");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("isAuthenticated");
     setToken(null);
     setUsertype(null);
     setUserId(null);
@@ -31,6 +39,17 @@ export function AuthProvider({ children }) {
     console.log("Is authenticated:", isAuthenticated);
     console.log("Token:", token);
   }, [usertype, isAuthenticated, token]);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const usertype = localStorage.getItem("usertype");
+    const userId = localStorage.getItem("userId");
+    const isAuthenticated = localStorage.getItem("isAuthenticated");
+
+    if (token && usertype && userId && isAuthenticated) {
+      login(token, usertype, userId);
+    }
+  });
 
   return (
     <AuthContext.Provider
