@@ -25,3 +25,29 @@ body {
     text-wrap: balance;
   }
 }
+
+.image-container {
+  position: relative; /* Allow positioning of the header */
+  width: 100%;
+  height: 400px; /* Set desired height */
+  overflow: hidden; /* Hide overflow */
+  background-image: url("/images/Home-Farmer.jpg"); /* Set your background image */
+  background-size: cover; /* Cover the entire container */
+  background-position: center; /* Center the image */
+}
+
+.header-bg {
+  position: absolute; /* Position absolutely to fill the container */
+  top: 0; /* Align to the top */
+  left: 0; /* Align to the left */
+  right: 0; /* Stretch to the right */
+  bottom: 0; /* Stretch to the bottom */
+  z-index: 1; /* Ensure text is above the background */
+  display: flex; /* Use flexbox for centering */
+  flex-direction: column; /* Stack items vertically */
+  align-items: center; /* Center horizontally */
+  justify-content: center; /* Center vertically */
+  padding: 2rem; /* Add padding for spacing */
+  background-color: rgba(0, 0, 0, 0.5); /* Dark overlay for contrast */
+  border-radius: 8px; /* Optional: add border radius for aesthetics */
+}
