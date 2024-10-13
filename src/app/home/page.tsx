@@ -2,27 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  Container,
-  Grid,
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
-  Button,
-  styled, // Import styled from MUI
-} from "@mui/material";
+import { Container, Grid, Typography } from "@mui/material";
 import { useConstants } from "@/context/ConstantsContext";
 import { useAuth } from "@/context/AuthContext";
-
-// Styled Card component for hover effect
-const HoverCard = styled(Card)(({ theme }) => ({
-  transition: "transform 0.3s ease, box-shadow 0.3s ease",
-  "&:hover": {
-    transform: "scale(1.05)", // Scale up on hover
-    boxShadow: theme.shadows[6], // Increase shadow on hover
-  },
-}));
+import { useRouter } from "next/navigation";
+import { CropCard } from "./components/CropCard"; // Import CropCard
 
 export default function HomePage() {
   interface Crop {
@@ -40,6 +24,7 @@ export default function HomePage() {
   const [crops, setCrops] = useState<Crop[]>([]);
   const { BACKEND_URL } = useConstants();
   const { token } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     // Fetch the crops from the backend
@@ -50,13 +35,18 @@ export default function HomePage() {
             Authorization: `Bearer ${token}`,
           },
         });
-        setCrops(response.data); // Assume `setCrops` is a state handler for crops
+        setCrops(response.data);
       } catch (error) {
         console.error("Error fetching crops:", error);
       }
     };
     fetchCrops();
-  }, [token]); // Add token to dependency array if it comes from a state
+  }, [token]);
+
+  // Function to handle card click and navigate to detailed page
+  const handleCardClick = (cropId: number) => {
+    router.push(`/crop/${cropId}`);
+  };
 
   return (
     <div className="flex flex-col min-h-screen py-2 bg-gray-100">
@@ -72,34 +62,16 @@ export default function HomePage() {
         <Grid container spacing={4}>
           {crops.map((crop) => (
             <Grid item xs={12} sm={6} md={4} key={crop.id}>
-              <HoverCard>
-                <CardMedia
-                  component="img"
-                  alt={crop.name}
-                  height="200"
-                  image={crop.image || "/images/default-crop.jpeg"} // Use default image if crop image is not available
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    {crop.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {crop.description}
-                  </Typography>
-                  <Typography variant="h6" color="primary">
-                    Price: ₹{crop.price}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Quantity: {crop.quantity} kg
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Seller: {crop.user.email}
-                  </Typography>
-                </CardContent>
-                <Button variant="contained" color="primary" fullWidth>
-                  Buy Now
-                </Button>
-              </HoverCard>
+              <CropCard
+                id={crop.id}
+                name={crop.name}
+                description={crop.description}
+                price={crop.price}
+                quantity={crop.quantity}
+                image={crop.image}
+                sellerEmail={crop.user.email}
+                onClick={handleCardClick}
+              />
             </Grid>
           ))}
         </Grid>

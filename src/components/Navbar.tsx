@@ -14,7 +14,7 @@ import {
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 export default function Navbar() {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, usertype } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -53,6 +53,14 @@ export default function Navbar() {
               <>
                 <Link href="/home">
                   <Button color="inherit">Home</Button>
+                </Link>
+                {usertype === "farmer" && (
+                  <Link href="/dashboard">
+                    <Button color="inherit">Dashboard</Button>
+                  </Link>
+                )}
+                <Link href="/purchasehistory">
+                  <Button color="inherit">My Orders</Button>
                 </Link>
                 <IconButton
                   aria-label="more"
