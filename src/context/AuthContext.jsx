@@ -41,6 +41,11 @@ export function AuthProvider({ children }) {
     router.push("/signin");
   };
 
+  const updateProfileImage = (newProfileImage) => {
+    localStorage.setItem("profile_image", newProfileImage);
+    setProfileImage(newProfileImage);
+  };
+
   // For debugging purposes
 
   // useEffect(() => {
@@ -71,6 +76,7 @@ export function AuthProvider({ children }) {
         userId,
         isAuthenticated,
         profile_image,
+        updateProfileImage,
         login,
         logout,
       }}

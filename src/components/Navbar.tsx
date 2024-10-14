@@ -59,6 +59,11 @@ export default function Navbar() {
                     <Button color="inherit">Dashboard</Button>
                   </Link>
                 )}
+                {usertype === "farmer" && (
+                  <Link href="/post">
+                    <Button color="inherit">Posts</Button>
+                  </Link>
+                )}
                 <Link href="/purchasehistory">
                   <Button color="inherit">My Orders</Button>
                 </Link>

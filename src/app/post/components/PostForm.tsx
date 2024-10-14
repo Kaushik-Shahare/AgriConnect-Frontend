@@ -7,6 +7,7 @@ import { useConstants } from "@/context/ConstantsContext";
 
 interface PostFormProps {
   onPostCreated: (newPost: any) => void;
+  closeModel: () => void;
 }
 
 const PostForm = ({ onPostCreated }: PostFormProps) => {
