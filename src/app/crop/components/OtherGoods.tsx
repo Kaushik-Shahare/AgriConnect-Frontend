@@ -10,8 +10,28 @@ import { useConstants } from "@/context/ConstantsContext";
 import PropTypes from "prop-types";
 import { useRouter } from "next/navigation";
 
-export const OtherGoods = ({ farmerId, currentCropId }) => {
-  const [otherGoods, setOtherGoods] = useState([]); // Adjust type as needed
+interface OtherGoodsProps {
+  farmerId: number;
+  currentCropId: number;
+}
+
+export const OtherGoods: React.FC<OtherGoodsProps> = ({
+  farmerId,
+  currentCropId,
+}) => {
+  interface Good {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    quantity: number;
+    image: string;
+    user: {
+      email: string;
+    };
+  }
+
+  const [otherGoods, setOtherGoods] = useState<Good[]>([]); // Adjust type as needed
   const { token } = useAuth();
   const { BACKEND_URL } = useConstants();
   const router = useRouter();
@@ -34,7 +54,9 @@ export const OtherGoods = ({ farmerId, currentCropId }) => {
           }
         );
         // Exclude the current product from the list of other goods
-        const goods = response.data.filter((item) => item.id !== currentCropId);
+        const goods = response.data.filter(
+          (item: { id: number }) => item.id !== currentCropId
+        );
         setOtherGoods(goods);
       } catch (error) {
         console.error("Error fetching other goods:", error);
@@ -59,7 +81,7 @@ export const OtherGoods = ({ farmerId, currentCropId }) => {
   //   }
   // }, [otherGoods]);
 
-  const handleClick = (id) => {
+  const handleClick = (id: number) => {
     // Handle click event
     router.push(`/crop/${id}`); // Replace with the correct path
   };

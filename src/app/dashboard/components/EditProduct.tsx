@@ -18,10 +18,10 @@ import { useConstants } from "@/context/ConstantsContext";
 interface ESoldProduct {
   id?: number; // ID is optional for adding products
   name: string;
-  description: string;
-  category: string;
+  description?: string;
+  category?: string;
   quantity: number;
-  price: number;
+  price?: number;
 }
 
 interface EditProductProps {
@@ -40,8 +40,8 @@ const EditProduct: React.FC<EditProductProps> = ({
   const [name, setName] = useState(product.name);
   const [description, setDescription] = useState(product.description);
   const [category, setCategory] = useState(product.category);
-  const [quantity, setQuantity] = useState(product.quantity);
   const [price, setPrice] = useState(product.price);
+  const [quantity, setQuantity] = useState(product.quantity);
   const [error, setError] = useState(""); // State for error messages
   const { BACKEND_URL } = useConstants();
 
@@ -54,7 +54,6 @@ const EditProduct: React.FC<EditProductProps> = ({
       setName(product.name);
       setDescription(product.description);
       setCategory(product.category);
-      setQuantity(product.quantity);
       setPrice(product.price);
     }
   }, [product]);
@@ -70,8 +69,7 @@ const EditProduct: React.FC<EditProductProps> = ({
           name,
           description,
           category,
-          quantity,
-          price: price.toString(), // Convert to string if needed
+          price: (price ?? 0).toString(), // Convert to string if needed
         },
         {
           headers: {
@@ -86,7 +84,7 @@ const EditProduct: React.FC<EditProductProps> = ({
         name,
         description,
         category,
-        quantity,
+        quantity: product.quantity, // Keep original quantity
         price,
       });
 
@@ -140,7 +138,7 @@ const EditProduct: React.FC<EditProductProps> = ({
           type="number"
           fullWidth
           value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
+          disabled // Make the field non-editable
         />
         <TextField
           margin="dense"

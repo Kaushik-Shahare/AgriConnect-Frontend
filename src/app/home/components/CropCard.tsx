@@ -50,12 +50,14 @@ export const CropCard: React.FC<CropCardProps> = ({
         image={image || "/images/default-crop.jpeg"}
       />
       <CardContent>
-        <Typography gutterBottom variant="h5">
-          ₹{price}
-        </Typography>
-        <Typography gutterBottom variant="h6">
-          {name}
-        </Typography>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Typography variant="h6" fontSize={20}>
+            {name}
+          </Typography>
+          <Typography variant="h5" fontSize={20}>
+            ₹{price}
+          </Typography>
+        </div>
       </CardContent>
       <Button variant="contained" color="primary" fullWidth>
         Buy Now

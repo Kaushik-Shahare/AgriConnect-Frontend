@@ -5,8 +5,10 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddProduct from "./AddProduct"; // Import the AddProduct modal
 import EditProduct from "./EditProduct"; // Import the EditProduct modal
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"; // Icon for add quantity
 import axios from "axios";
 import { useConstants } from "@/context/ConstantsContext";
+import AddQuantity from "./AddQuantity"; // Import the AddQuantity modal
 
 interface SoldProduct {
   id?: number;
@@ -23,6 +25,7 @@ const SoldProductsList: React.FC = () => {
   const [soldProducts, setSoldProducts] = useState<SoldProduct[]>([]);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [quantityModalOpen, setQuantityModalOpen] = useState(false); // State for quantity modal
   const [currentProduct, setCurrentProduct] = useState<SoldProduct | null>(
     null
   );
@@ -41,7 +44,6 @@ const SoldProductsList: React.FC = () => {
       setSoldProducts(response.data);
     } catch (error) {
       console.error("Error fetching sold products:", error);
-      // Optionally, show an error notification to the user
     }
   }, [BACKEND_URL]);
 
@@ -62,6 +64,16 @@ const SoldProductsList: React.FC = () => {
     setEditModalOpen(false);
   };
 
+  const handleOpenQuantityModal = (product: SoldProduct) => {
+    setCurrentProduct(product); // Set current product for adding quantity
+    setQuantityModalOpen(true);
+  };
+
+  const handleCloseQuantityModal = () => {
+    setCurrentProduct(null);
+    setQuantityModalOpen(false);
+  };
+
   const handleDeleteProduct = async (id: number) => {
     try {
       await axios.delete(`${BACKEND_URL}/api/crop/farmer/crop/${id}/`, {
@@ -69,26 +81,18 @@ const SoldProductsList: React.FC = () => {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      // Fetch updated products after deletion
-      fetchSoldProducts();
+      fetchSoldProducts(); // Fetch updated products after deletion
     } catch (error) {
       console.error("Error deleting product:", error);
-      // Optionally, show an error notification to the user
     }
   };
 
   const handleAddProduct = async (newProduct: SoldProduct) => {
     try {
-      // await axios.post(`${BACKEND_URL}/api/crop/farmer/crop/`, newProduct, {
-      //   headers: {
-      //     Authorization: `Bearer ${localStorage.getItem("token")}`,
-      //   },
-      // });
       fetchSoldProducts();
       handleCloseAddModal();
     } catch (error) {
       console.error("Error adding product:", error);
-      // Optionally, show an error notification to the user
     }
   };
 
@@ -99,19 +103,9 @@ const SoldProductsList: React.FC = () => {
         ...updatedProduct,
       };
       try {
-        await axios.patch(
-          `${BACKEND_URL}/api/crop/farmer/crop/${currentProduct.id}/`,
-          fullUpdatedProduct,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
         fetchSoldProducts();
       } catch (error) {
         console.error("Error updating product:", error);
-        // Optionally, show an error notification to the user
       }
       handleCloseEditModal();
     }
@@ -128,7 +122,7 @@ const SoldProductsList: React.FC = () => {
       >
         <Typography variant="h6">List of Products</Typography>
         <IconButton onClick={handleOpenAddModal} color="primary">
-          <AddIcon />
+          <AddIcon aria-hidden="true" focusable="false" />
         </IconButton>
       </div>
       <div style={{ maxHeight: "400px", overflowY: "auto" }}>
@@ -171,7 +165,7 @@ const SoldProductsList: React.FC = () => {
                     onClick={() => handleOpenEditModal(product)}
                     color="primary"
                   >
-                    <EditIcon />
+                    <EditIcon aria-hidden="true" focusable="false" />
                   </IconButton>
                   <IconButton
                     onClick={() =>
@@ -179,7 +173,16 @@ const SoldProductsList: React.FC = () => {
                     }
                     color="secondary"
                   >
-                    <DeleteIcon />
+                    <DeleteIcon aria-hidden="true" focusable="false" />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleOpenQuantityModal(product)}
+                    color="default"
+                  >
+                    <AddCircleOutlineIcon
+                      aria-hidden="true"
+                      focusable="false"
+                    />
                   </IconButton>
                 </div>
               </CardContent>
@@ -187,6 +190,12 @@ const SoldProductsList: React.FC = () => {
           ))
         )}
       </div>
+      <AddQuantity
+        open={quantityModalOpen}
+        onClose={handleCloseQuantityModal}
+        productId={currentProduct?.id || 0}
+        onQuantityAdded={fetchSoldProducts}
+      />
       <AddProduct
         open={addModalOpen}
         onClose={handleCloseAddModal}

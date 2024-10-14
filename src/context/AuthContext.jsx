@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 // Define the shape of the Auth context
 const AuthContext = createContext();
@@ -10,16 +11,20 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(null);
   const [usertype, setUsertype] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [profile_image, setProfileImage] = useState(null);
+  const router = useRouter();
 
-  const login = (newToken, newUserType, newUserId) => {
+  const login = (newToken, newUserType, newUserId, newProfileImage) => {
     localStorage.setItem("token", newToken);
     localStorage.setItem("usertype", newUserType);
     localStorage.setItem("userId", newUserId);
     localStorage.setItem("isAuthenticated", true);
+    localStorage.setItem("profile_image", newProfileImage);
     setToken(newToken);
     setUsertype(newUserType);
     setUserId(newUserId);
     setIsAuthenticated(true);
+    setProfileImage(newProfileImage);
   };
 
   const logout = () => {
@@ -27,33 +32,48 @@ export function AuthProvider({ children }) {
     localStorage.removeItem("usertype");
     localStorage.removeItem("userId");
     localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("profile_image");
     setToken(null);
     setUsertype(null);
     setUserId(null);
     setIsAuthenticated(false);
+    setProfileImage(null);
+    router.push("/signin");
   };
 
-  useEffect(() => {
-    console.log("User ID:", userId);
-    console.log("Logged in as", usertype);
-    console.log("Is authenticated:", isAuthenticated);
-    console.log("Token:", token);
-  }, [usertype, isAuthenticated, token]);
+  // For debugging purposes
+
+  // useEffect(() => {
+  //   console.log("User ID:", userId);
+  //   console.log("Logged in as", usertype);
+  //   console.log("Is authenticated:", isAuthenticated);
+  //   console.log("Token:", token);
+  //   console.log("Profile Image:", profile_image);
+  // }, [usertype, isAuthenticated, token]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
     const usertype = localStorage.getItem("usertype");
     const userId = localStorage.getItem("userId");
     const isAuthenticated = localStorage.getItem("isAuthenticated");
+    const profile_image = localStorage.getItem("profile_image");
 
-    if (token && usertype && userId && isAuthenticated) {
-      login(token, usertype, userId);
+    if (token && usertype && userId && isAuthenticated && profile_image) {
+      login(token, usertype, userId, profile_image);
     }
   });
 
   return (
     <AuthContext.Provider
-      value={{ token, usertype, userId, isAuthenticated, login, logout }}
+      value={{
+        token,
+        usertype,
+        userId,
+        isAuthenticated,
+        profile_image,
+        login,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>

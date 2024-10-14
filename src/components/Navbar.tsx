@@ -14,7 +14,7 @@ import {
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 
 export default function Navbar() {
-  const { isAuthenticated, logout, usertype } = useAuth();
+  const { isAuthenticated, profile_image, logout, usertype } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -69,7 +69,15 @@ export default function Navbar() {
                   onClick={handleMenuClick}
                   color="inherit"
                 >
-                  <MoreVertIcon />
+                  {/* <MoreVertIcon /> */}
+                  <img
+                    src={
+                      profile_image ||
+                      "https://res.cloudinary.com/dkfdmcxsz/image/upload/v1728890065/h8k9chejvd75xv2ms2dv.png"
+                    }
+                    alt="profile"
+                    className="rounded-full h-8 w-8 border border-white"
+                  />
                 </IconButton>
                 <Menu
                   id="long-menu"

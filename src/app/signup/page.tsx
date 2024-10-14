@@ -17,6 +17,7 @@ export default function SignUp() {
   const { BACKEND_URL } = useConstants();
   //   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [userType, setUserType] = useState("farmer");
@@ -36,6 +37,7 @@ export default function SignUp() {
         `${BACKEND_URL}/api/account/register/`,
         {
           email,
+          username,
           password,
           user_type: userType,
         }
@@ -71,6 +73,16 @@ export default function SignUp() {
             onChange={(e) => setName(e.target.value)}
             className="rounded"
           /> */}
+          <TextField
+            id="username"
+            label="Username"
+            variant="outlined"
+            fullWidth
+            required
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            className="rounded"
+          />
 
           <TextField
             id="email"

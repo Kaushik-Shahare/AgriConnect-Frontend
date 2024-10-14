@@ -33,7 +33,7 @@ export default function SignUp() {
       });
 
       const { token, user } = response.data;
-      login(token.access, user.user_type, user.id);
+      login(token.access, user.user_type, user.id, user.profile_image);
 
       router.push("/home"); // Redirect user to login page
 

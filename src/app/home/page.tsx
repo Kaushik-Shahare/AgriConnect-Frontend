@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Container, Grid, Typography } from "@mui/material";
+import { Container, Typography, Box } from "@mui/material";
 import { useConstants } from "@/context/ConstantsContext";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
@@ -16,6 +16,7 @@ export default function HomePage() {
     };
     name: string;
     description: string;
+    category: string;
     price: number;
     quantity: number;
     image?: string;
@@ -28,6 +29,7 @@ export default function HomePage() {
 
   useEffect(() => {
     // Fetch the crops from the backend
+    if (!token) return;
     const fetchCrops = async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/api/crop/list/`, {
@@ -48,6 +50,15 @@ export default function HomePage() {
     router.push(`/crop/${cropId}`);
   };
 
+  // Group crops by category
+  const groupedCrops = crops.reduce((acc, crop) => {
+    if (!acc[crop.category]) {
+      acc[crop.category] = [];
+    }
+    acc[crop.category].push(crop);
+    return acc;
+  }, {} as { [key: string]: Crop[] });
+
   return (
     <div className="flex flex-col min-h-screen py-2 bg-gray-100">
       <Container className="py-20">
@@ -59,22 +70,51 @@ export default function HomePage() {
         >
           Farmer Goods Available for Sale
         </Typography>
-        <Grid container spacing={4}>
-          {crops.map((crop) => (
-            <Grid item xs={12} sm={6} md={4} key={crop.id}>
-              <CropCard
-                id={crop.id}
-                name={crop.name}
-                description={crop.description}
-                price={crop.price}
-                quantity={crop.quantity}
-                image={crop.image}
-                sellerEmail={crop.user.email}
-                onClick={handleCardClick}
-              />
-            </Grid>
-          ))}
-        </Grid>
+
+        {/* Render crops by category */}
+        {Object.keys(groupedCrops).map((category) => (
+          <div
+            key={category} // Add key here for the category div
+            className="border-2 border-gray-400 px-8 py-4 my-4 rounded-lg shadow-md bg-white"
+          >
+            <div className="mb-12">
+              <Typography variant="h4" gutterBottom className="text-black">
+                {category}
+              </Typography>
+
+              {/* Horizontal Scrollable Grid for Crops */}
+              <Box
+                sx={{
+                  display: "flex",
+                  overflowX: "auto",
+                  whiteSpace: "nowrap",
+                  paddingBottom: "1rem",
+                }}
+              >
+                {groupedCrops[category].map((crop) => (
+                  <Box
+                    key={crop.id} // Ensure each CropCard has a unique key
+                    sx={{
+                      flex: "0 0 18%", // Adjust card width (10-20%)
+                      marginRight: "10px", // Adjust spacing between cards
+                    }}
+                  >
+                    <CropCard
+                      id={crop.id}
+                      name={crop.name}
+                      description={crop.description}
+                      price={crop.price}
+                      quantity={crop.quantity}
+                      image={crop.image}
+                      sellerEmail={crop.user.email}
+                      onClick={() => handleCardClick(crop.id)}
+                    />
+                  </Box>
+                ))}
+              </Box>
+            </div>
+          </div>
+        ))}
       </Container>
     </div>
   );

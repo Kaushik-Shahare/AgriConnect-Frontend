@@ -24,12 +24,16 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 });
 
 const UserProfile = () => {
-  const { token } = useAuth(); // Assuming you have a context to manage authentication
+  const { token } = useAuth();
   const { BACKEND_URL } = useConstants();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+  const [newProfileImage, setNewProfileImage] = useState<File | null>(null);
+
+  // Default profile image URL
+  const DEFAULT_IMAGE_URL = "./images/default_profile.jpg"; // Replace with your default image URL
 
   useEffect(() => {
     if (token === null) return;
@@ -65,12 +69,33 @@ const UserProfile = () => {
     }));
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setNewProfileImage(file);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const formData = new FormData();
+
+    // Append profile image if a new one exists
+    if (newProfileImage) {
+      formData.append("new_profile_image", newProfileImage);
+    }
+
+    // Append other profile data
+    for (const key in profile) {
+      formData.append(key, profile[key]);
+    }
+    formData.delete("profile_image");
+
     try {
-      await axios.put(`${BACKEND_URL}/api/account/profile/`, profile, {
+      await axios.put(`${BACKEND_URL}/api/account/profile/`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
       });
       setSuccess(true);
@@ -95,12 +120,38 @@ const UserProfile = () => {
           <Typography variant="h4" align="center" gutterBottom>
             User Profile
           </Typography>
+
+          <div className="flex flex-col items-center pb-6">
+            <img
+              src={profile?.profile_image || DEFAULT_IMAGE_URL}
+              alt="Profile"
+              style={{ width: "150px", height: "150px", borderRadius: "50%" }}
+              className="border border-gray-900"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+              style={{ marginTop: "1rem" }}
+            />
+          </div>
+
           <form onSubmit={handleSubmit}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField
                   label="Email"
                   value={profile?.email}
+                  disabled
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  label="Username"
+                  name="username"
+                  value={profile?.username}
                   disabled
                   fullWidth
                   variant="outlined"
