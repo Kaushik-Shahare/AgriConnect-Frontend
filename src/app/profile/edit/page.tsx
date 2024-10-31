@@ -5,50 +5,15 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useConstants } from "@/context/ConstantsContext";
-import {
-  Container,
-  Typography,
-  TextField,
-  Button,
-  Paper,
-  Grid,
-  CircularProgress,
-  Snackbar,
-} from "@mui/material";
+import { CircularProgress, Snackbar } from "@mui/material"; // Import CircularProgress and Snackbar from MUI for loading and notifications
 import MuiAlert, { AlertProps } from "@mui/material/Alert";
-import { styled } from "@mui/system";
+import { LinearProgress } from "@mui/material"; // Import LinearProgress for the timer bar
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
   ref
 ) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
-
-// Styling for centering content and adding clean spacing
-const ProfileContainer = styled(Container)({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  minHeight: "100vh",
-  backgroundColor: "#f7f7f7",
-});
-
-const ProfileImageWrapper = styled("div")({
-  position: "relative",
-  marginBottom: "2rem",
-  display: "flex",
-  justifyContent: "center",
-});
-
-const ProfileImage = styled("img")({
-  width: "120px",
-  height: "120px",
-  borderRadius: "50%",
-  objectFit: "cover",
-  border: "2px solid #3f51b5",
-  marginBottom: "1rem",
 });
 
 const UserProfile = () => {
@@ -59,7 +24,12 @@ const UserProfile = () => {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
   const [newProfileImage, setNewProfileImage] = useState<File | null>(null);
+  const [snackbarTimer, setSnackbarTimer] = useState<NodeJS.Timeout | null>(
+    null
+  ); // Timer for snackbar
   const router = useRouter();
+
+  const [progress, setProgress] = useState(100); // Progress bar for success message
 
   const DEFAULT_IMAGE_URL = "./images/default_profile.jpg"; // Replace with your default image URL
 
@@ -130,7 +100,23 @@ const UserProfile = () => {
         });
       setSuccess(true);
       setError(null);
-      router.push("/profile");
+
+      // Start timer for 6 seconds and then redirect to profile page
+      setSnackbarTimer(
+        setTimeout(() => {
+          router.push("/profile");
+        }, 6000)
+      );
+
+      // Progress bar decrease
+      let decrementProgress = 100;
+      const intervalId = setInterval(() => {
+        decrementProgress -= 100 / 60; // Decrease progress over 6 seconds (100 / 60 = 1.67 every 100ms)
+        setProgress(decrementProgress);
+        if (decrementProgress <= 0) {
+          clearInterval(intervalId);
+        }
+      }, 100);
     } catch (err) {
       console.error("Error updating profile:", err);
       setError("Error updating profile");
@@ -140,159 +126,185 @@ const UserProfile = () => {
   const handleClose = () => {
     setError(null);
     setSuccess(false);
+    if (snackbarTimer) {
+      clearTimeout(snackbarTimer);
+    }
   };
 
   if (loading) return <CircularProgress />;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-100">
-      <ProfileContainer maxWidth="md" className="py-20">
-        <Paper elevation={3} style={{ padding: "2rem", width: "100%" }}>
-          <Typography variant="h5" align="center" gutterBottom>
-            Edit Profile
-          </Typography>
+    <div className="flex flex-col items-center justify-center min-h-screen py-6 bg-gray-100 pt-20">
+      <div className="bg-white shadow-md rounded-lg p-6 max-w-lg w-full">
+        <h2 className="text-2xl font-bold text-center mb-4">Edit Profile</h2>
 
-          <ProfileImageWrapper>
-            <ProfileImage
-              src={profile?.profile_image || DEFAULT_IMAGE_URL}
-              alt="Profile"
-            />
+        <div className="flex flex-col items-center mb-4">
+          <img
+            src={profile?.profile_image || DEFAULT_IMAGE_URL}
+            alt="Profile"
+            className="w-32 h-32 rounded-full border border-gray-300 object-cover mb-2"
+          />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="border border-gray-300 rounded p-2 mb-4"
+          />
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700" htmlFor="email">
+              Email
+            </label>
             <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              style={{ marginTop: "1rem" }}
+              type="email"
+              value={profile?.email}
+              disabled
+              className="w-full border border-gray-300 rounded p-2"
             />
-          </ProfileImageWrapper>
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700" htmlFor="username">
+              Username
+            </label>
+            <input
+              type="text"
+              name="username"
+              value={profile?.username}
+              disabled
+              className="w-full border border-gray-300 rounded p-2"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700" htmlFor="name">
+              Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={profile?.name}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded p-2"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700" htmlFor="phone">
+              Phone
+            </label>
+            <input
+              type="text"
+              name="phone"
+              value={profile?.phone}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded p-2"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700" htmlFor="address">
+              Address
+            </label>
+            <input
+              type="text"
+              name="address"
+              value={profile?.address}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded p-2"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700" htmlFor="city">
+              City
+            </label>
+            <input
+              type="text"
+              name="city"
+              value={profile?.city}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded p-2"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700" htmlFor="state">
+              State
+            </label>
+            <input
+              type="text"
+              name="state"
+              value={profile?.state}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded p-2"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700" htmlFor="country">
+              Country
+            </label>
+            <input
+              type="text"
+              name="country"
+              value={profile?.country}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded p-2"
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700" htmlFor="zip">
+              Zip Code
+            </label>
+            <input
+              type="text"
+              name="zip"
+              value={profile?.zip}
+              onChange={handleChange}
+              required
+              className="w-full border border-gray-300 rounded p-2"
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-500 transition"
+          >
+            Update Profile
+          </button>
+        </form>
+      </div>
 
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={2}>
-              <Grid item xs={12}>
-                <TextField
-                  label="Email"
-                  value={profile?.email}
-                  disabled
-                  fullWidth
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Username"
-                  name="username"
-                  value={profile?.username}
-                  disabled
-                  fullWidth
-                  variant="outlined"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Name"
-                  name="name"
-                  value={profile?.name}
-                  onChange={handleChange}
-                  fullWidth
-                  variant="outlined"
-                  required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Phone"
-                  name="phone"
-                  value={profile?.phone}
-                  onChange={handleChange}
-                  fullWidth
-                  variant="outlined"
-                  required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Address"
-                  name="address"
-                  value={profile?.address}
-                  onChange={handleChange}
-                  fullWidth
-                  variant="outlined"
-                  required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="City"
-                  name="city"
-                  value={profile?.city}
-                  onChange={handleChange}
-                  fullWidth
-                  variant="outlined"
-                  required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="State"
-                  name="state"
-                  value={profile?.state}
-                  onChange={handleChange}
-                  fullWidth
-                  variant="outlined"
-                  required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Country"
-                  name="country"
-                  value={profile?.country}
-                  onChange={handleChange}
-                  fullWidth
-                  variant="outlined"
-                  required
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  label="Zip Code"
-                  name="zip"
-                  value={profile?.zip}
-                  onChange={handleChange}
-                  fullWidth
-                  variant="outlined"
-                  required
-                />
-              </Grid>
-            </Grid>
+      <Snackbar
+        open={Boolean(error)}
+        autoHideDuration={6000}
+        onClose={handleClose}
+      >
+        <Alert onClose={handleClose} severity="error">
+          {error}
+        </Alert>
+      </Snackbar>
 
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              style={{ marginTop: "1rem" }}
-            >
-              Update Profile
-            </Button>
-          </form>
-        </Paper>
-
-        <Snackbar
-          open={Boolean(error)}
-          autoHideDuration={6000}
-          onClose={handleClose}
-        >
-          <Alert onClose={handleClose} severity="error">
-            {error}
-          </Alert>
-        </Snackbar>
-
-        <Snackbar open={success} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar open={success} onClose={handleClose}>
+        <div>
           <Alert onClose={handleClose} severity="success">
             Profile updated successfully!
           </Alert>
-        </Snackbar>
-      </ProfileContainer>
+          <LinearProgress
+            variant="determinate"
+            value={progress} // Show full progress initially
+            style={{
+              height: "4px",
+              transition: "width 6s linear",
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+            }}
+          />
+        </div>
+      </Snackbar>
     </div>
   );
 };

@@ -1,14 +1,16 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { Card, CardContent, Typography, IconButton } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
-import AddProduct from "./AddProduct"; // Import the AddProduct modal
-import EditProduct from "./EditProduct"; // Import the EditProduct modal
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"; // Icon for add quantity
 import axios from "axios";
 import { useConstants } from "@/context/ConstantsContext";
+import AddProduct from "./AddProduct"; // Import the AddProduct modal
+import EditProduct from "./EditProduct"; // Import the EditProduct modal
 import AddQuantity from "./AddQuantity"; // Import the AddQuantity modal
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  faPlus,
+  faEdit,
+  faTrash,
+  faPlusSquare,
+} from "@fortawesome/free-solid-svg-icons";
 
 interface SoldProduct {
   id?: number;
@@ -25,7 +27,7 @@ const SoldProductsList: React.FC = () => {
   const [soldProducts, setSoldProducts] = useState<SoldProduct[]>([]);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [quantityModalOpen, setQuantityModalOpen] = useState(false); // State for quantity modal
+  const [quantityModalOpen, setQuantityModalOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<SoldProduct | null>(
     null
   );
@@ -65,7 +67,7 @@ const SoldProductsList: React.FC = () => {
   };
 
   const handleOpenQuantityModal = (product: SoldProduct) => {
-    setCurrentProduct(product); // Set current product for adding quantity
+    setCurrentProduct(product);
     setQuantityModalOpen(true);
   };
 
@@ -112,81 +114,62 @@ const SoldProductsList: React.FC = () => {
   };
 
   return (
-    <div>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="h6">List of Products</Typography>
-        <IconButton onClick={handleOpenAddModal} color="primary">
-          <AddIcon aria-hidden="true" focusable="false" />
-        </IconButton>
+    <div className="p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">List of Products</h2>
+        <button onClick={handleOpenAddModal} className="text-blue-500">
+          <FontAwesomeIcon icon={faPlus} className="h-6 w-6" />
+        </button>
       </div>
-      <div style={{ maxHeight: "400px", overflowY: "auto" }}>
+      <div className="max-h-96 overflow-y-auto">
         {soldProducts.length === 0 ? (
-          <Typography variant="body1">No products sold.</Typography>
+          <p>No products sold.</p>
         ) : (
           soldProducts.map((product) => (
-            <Card
+            <div
               key={product.id}
-              style={{ marginBottom: "10px", position: "relative" }}
+              className="border rounded-md p-4 mb-2 relative bg-white shadow"
             >
-              <CardContent>
-                <Typography variant="h6">{product.name}</Typography>
-                <Typography variant="body2">
-                  Quantity: {product.quantity}
-                </Typography>
-                <Typography variant="body2">
-                  Category: {product.category || "N/A"}
-                </Typography>
-                <Typography variant="body2">
-                  Price at Sale: Rs.{" "}
-                  {product.price ? product.price.toFixed(2) : "N/A"}
-                </Typography>
-                <Typography variant="body2">
-                  Listed at:{" "}
-                  {product.created_at
-                    ? new Date(product.created_at).toLocaleDateString()
-                    : "N/A"}
-                </Typography>
-                <Typography variant="body2">
-                  Updated Date:{" "}
-                  {product.updated_at
-                    ? new Date(product.updated_at).toLocaleDateString()
-                    : "N/A"}
-                </Typography>
-                <div
-                  style={{ position: "absolute", right: "10px", top: "10px" }}
+              <h3 className="text-lg font-bold">{product.name}</h3>
+              <p>Quantity: {product.quantity}</p>
+              <p>Category: {product.category || "N/A"}</p>
+              <p>
+                Price at Sale: Rs.{" "}
+                {product.price ? product.price.toFixed(2) : "N/A"}
+              </p>
+              <p>
+                Listed at:{" "}
+                {product.created_at
+                  ? new Date(product.created_at).toLocaleDateString()
+                  : "N/A"}
+              </p>
+              <p>
+                Updated Date:{" "}
+                {product.updated_at
+                  ? new Date(product.updated_at).toLocaleDateString()
+                  : "N/A"}
+              </p>
+              <div className="absolute right-2 top-2 flex space-x-2">
+                <button
+                  onClick={() => handleOpenEditModal(product)}
+                  className="text-blue-500"
                 >
-                  <IconButton
-                    onClick={() => handleOpenEditModal(product)}
-                    color="primary"
-                  >
-                    <EditIcon aria-hidden="true" focusable="false" />
-                  </IconButton>
-                  <IconButton
-                    onClick={() =>
-                      product.id && handleDeleteProduct(product.id)
-                    }
-                    color="secondary"
-                  >
-                    <DeleteIcon aria-hidden="true" focusable="false" />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleOpenQuantityModal(product)}
-                    color="default"
-                  >
-                    <AddCircleOutlineIcon
-                      aria-hidden="true"
-                      focusable="false"
-                    />
-                  </IconButton>
-                </div>
-              </CardContent>
-            </Card>
+                  <FontAwesomeIcon icon={faEdit} className="h-6 w-6" />
+                </button>
+                <button
+                  onClick={() => product.id && handleDeleteProduct(product.id)}
+                  className="text-red-500"
+                >
+                  <FontAwesomeIcon icon={faTrash} className="h-6 w-6" />
+                </button>
+                <button
+                  onClick={() => handleOpenQuantityModal(product)}
+                  className="text-gray-500"
+                >
+                  <FontAwesomeIcon icon={faPlusSquare} className="h-6 w-6" />
+                </button>
+              </div>
+            </div>
           ))
         )}
       </div>

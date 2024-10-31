@@ -1,16 +1,18 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Container } from "@mui/material";
 import { useAuth } from "@/context/AuthContext";
 import PostForm from "./components/PostForm";
 import { useConstants } from "@/context/ConstantsContext";
+import { Fab } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
 const PostPage = () => {
   interface User {
     id: number;
     email: string;
+    profile_image: string;
     name: string;
   }
 
@@ -22,6 +24,7 @@ const PostPage = () => {
     user: User;
     likes: number[];
     likes_count: number;
+    liked: boolean;
   }
 
   interface Comment {
@@ -29,15 +32,19 @@ const PostPage = () => {
     content: string;
     created_at: string;
     user: User;
+    likes: number[];
+    likes_count: number;
+    liked: boolean;
   }
 
   const [posts, setPosts] = useState<Post[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
-  const { token, userId } = useAuth(); // Get userId from AuthContext
+  const { token, userId } = useAuth();
   const { BACKEND_URL } = useConstants();
+  const DEFAULT_IMAGE_URL = "/images/default_profile.jpg";
 
   useEffect(() => {
     if (!token) return;
@@ -56,18 +63,6 @@ const PostPage = () => {
     fetchPosts();
   }, [token, BACKEND_URL]);
 
-  const handleOpenModal = (post: Post) => {
-    setSelectedPost(post);
-    fetchComments(post.id);
-    setIsModalOpen(true);
-  };
-
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-    setSelectedPost(null);
-    setComments([]);
-  };
-
   const fetchComments = async (postId: number) => {
     try {
       const response = await axios.get(
@@ -82,26 +77,29 @@ const PostPage = () => {
     }
   };
 
-  const handleCommentSubmit = async (e: React.FormEvent) => {
+  const handleCommentSubmit = async (e: React.FormEvent, postId: number) => {
     e.preventDefault();
-    if (!newComment || !selectedPost) return;
+    if (!newComment) return;
 
     try {
       await axios.post(
-        `${BACKEND_URL}/api/post/posts/comment/${selectedPost.id}/`,
+        `${BACKEND_URL}/api/post/posts/comment/${postId}/`,
         { content: newComment },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setComments([
-        ...comments,
-        {
-          id: Date.now(),
-          content: newComment,
-          user: { id: 0, email: "", name: "You" },
-          created_at: new Date().toISOString(),
-        },
-      ]);
+      setPosts((prevPosts) =>
+        prevPosts.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                likes_count: post.likes_count,
+                likes: post.likes,
+              }
+            : post
+        )
+      );
       setNewComment("");
+      fetchComments(postId); // Fetch comments again to update the view
     } catch (error) {
       console.error("Error submitting comment:", error);
     }
@@ -109,7 +107,7 @@ const PostPage = () => {
 
   const handlePostCreated = (newPost: Post) => {
     setPosts([newPost, ...posts]);
-    setIsModalOpen(false);
+    setIsCreateModalOpen(false);
   };
 
   const handleLikePost = async (postId: number) => {
@@ -120,8 +118,7 @@ const PostPage = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      // Update the liked state in the post
-      setPosts((prevPosts) =>
+      setPosts((prevPosts: Post[]) =>
         prevPosts.map((post) =>
           post.id === postId
             ? {
@@ -129,9 +126,10 @@ const PostPage = () => {
                 likes_count: post.likes.includes(userId)
                   ? post.likes_count - 1
                   : post.likes_count + 1,
-                liked_users: post.likes.includes(userId)
-                  ? post.likes.filter((id) => id !== userId) // Remove userId if already liked
-                  : [...post.likes, userId], // Add userId if not already liked
+                likes: post.likes.includes(userId)
+                  ? post.likes.filter((id) => id !== userId)
+                  : [...post.likes, userId],
+                liked: post.likes.includes(userId) ? false : true,
               }
             : post
         )
@@ -141,133 +139,193 @@ const PostPage = () => {
     }
   };
 
+  const handleLikeComment = async (commentId: number) => {
+    try {
+      await axios.post(
+        `${BACKEND_URL}/api/post/posts/comment/like/${commentId}/`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setComments((prevComments: Comment[]) =>
+        prevComments.map((comment) =>
+          comment.id === commentId
+            ? {
+                ...comment,
+                likes_count: comment.likes.includes(userId)
+                  ? comment.likes_count - 1
+                  : comment.likes_count + 1,
+                likes: comment.likes.includes(userId)
+                  ? comment.likes.filter((id) => id !== userId)
+                  : [...comment.likes, userId],
+                liked: comment.likes.includes(userId) ? false : true,
+              }
+            : comment
+        )
+      );
+    } catch (error) {
+      console.error("Error liking comment:", error);
+    }
+  };
+
+  const formatTimeAgo = (date: string) => {
+    const now = new Date();
+    const postedDate = new Date(date);
+    const seconds = Math.floor((now.getTime() - postedDate.getTime()) / 1000);
+    let interval = Math.floor(seconds / 31536000);
+    if (interval > 1) return `${interval} years ago`;
+    interval = Math.floor(seconds / 2592000);
+    if (interval > 1) return `${interval} months ago`;
+    interval = Math.floor(seconds / 86400);
+    if (interval > 1) return `${interval} days ago`;
+    interval = Math.floor(seconds / 3600);
+    if (interval > 1) return `${interval} hours ago`;
+    interval = Math.floor(seconds / 60);
+    if (interval > 1) return `${interval} minutes ago`;
+    return `${seconds} seconds ago`;
+  };
+
   return (
     <div className="p-4 flex flex-col min-h-screen py-20 bg-gray-100">
-      <Container>
+      <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-6 text-black">Farmer's Posts</h1>
 
-        {/* Add Post Button */}
-        <button
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-          onClick={() => setIsModalOpen(true)}
-        >
-          Add Post
-        </button>
-
-        {/* Instagram-like Post Grid */}
-        <div className="mt-6 grid gap-2 grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-          {posts.map((post) => (
+        <div className="mt-6 grid gap-2 grid-cols-1">
+          {posts.map((post: Post) => (
             <div
               key={post.id}
-              className="relative cursor-pointer group h-48 overflow-hidden"
-              onClick={() => handleOpenModal(post)}
+              className="relative border border-gray-600 p-4 rounded"
             >
-              {post.image_url ? (
+              <div className="flex flex-row items-center p-2">
+                <img
+                  src={post.user.profile_image || DEFAULT_IMAGE_URL}
+                  alt="Profile"
+                  className="w-8 h-8 rounded-full"
+                />
+                <p className="text-sm font-bold text-black ml-2">
+                  {post.user.name}
+                </p>
+              </div>
+
+              {post.image_url && (
                 <img
                   src={post.image_url}
                   alt="Post"
-                  className="w-full h-full object-cover"
+                  className="w-full object-cover"
                 />
-              ) : (
-                <div className="bg-gray-300 flex items-center justify-center text-gray-600 w-full h-full">
-                  No Image
-                </div>
               )}
 
-              {/* Hover overlay for additional info */}
-              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex flex-col justify-between p-2 text-white">
-                <p className="text-sm font-bold">{post.user.name}</p>
-                <p className="text-sm line-clamp-2">{post.content}</p>
-                <div className="flex justify-between items-center mt-auto">
-                  <span className="text-xs">{post.likes_count} Likes</span>
-                  <button
-                    className="text-xs underline"
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent opening post modal
-                      handleOpenModal(post);
-                    }}
-                  >
-                    Comments
-                  </button>
+              <div className="p-2">
+                <p className="text-black line-clamp-2">
+                  {post.content.length > 100
+                    ? `${post.content.slice(0, 100)}... `
+                    : post.content}
+                  {post.content.length > 100 && (
+                    <span
+                      className="text-blue-500 cursor-pointer"
+                      onClick={() => alert(post.content)}
+                    >
+                      more
+                    </span>
+                  )}
+                </p>
+                <div className="flex gap-1">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleLikePost(post.id);
                     }}
                   >
-                    {post.likes.includes(userId) ? (
+                    {post.liked ? (
                       <span className="text-red-600">❤️</span>
                     ) : (
                       <span className="text-red-400">🤍</span>
                     )}
                   </button>
+                  <span className="text-xs text-black my-auto">
+                    {post.likes_count}
+                  </span>
                 </div>
+
+                <form
+                  onSubmit={(e) => handleCommentSubmit(e, post.id)}
+                  className="mt-2 flex gap-2"
+                >
+                  <input
+                    type="text"
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    className="border p-2 w-full"
+                    placeholder="Add a comment..."
+                  />
+                  <button
+                    type="submit"
+                    className="bg-blue-500 text-white p-2 rounded"
+                  >
+                    Submit
+                  </button>
+                </form>
+
+                {/* Button to view comments */}
+                <button
+                  onClick={() => {
+                    fetchComments(post.id); // Fetch comments on open
+                    setSelectedPost(post);
+                  }}
+                  className="text-xs underline text-black mt-2"
+                >
+                  View Comments
+                </button>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Post Modal - To view individual post content and comments */}
-        {isModalOpen && selectedPost && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        {selectedPost && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 py-20 overflow-auto">
             <div className="bg-white p-8 rounded-lg w-full max-w-md">
               <h2 className="text-2xl font-bold mb-4 text-black">
-                {selectedPost.user.name}'s Post
+                Comments for {selectedPost.user.name}'s Post
               </h2>
-              {selectedPost.image_url && (
-                <img
-                  src={selectedPost.image_url}
-                  alt="Post"
-                  className="w-full h-64 object-cover"
-                />
-              )}
-              <p className="mt-4 text-black">{selectedPost.content}</p>
-              <small className="block mt-2 text-gray-600">
-                Posted on: {new Date(selectedPost.created_at).toLocaleString()}
-              </small>
-
-              {/* Comments Section */}
-              <div className="mt-4">
-                <h3 className="text-lg font-bold text-black">Comments</h3>
-                <div className="max-h-40 overflow-y-auto">
-                  {comments.map((comment) => (
-                    <div key={comment.id} className="border-b py-2">
-                      <div className="flex flex-col justify-between">
-                        <p className="font-semibold text-black">
-                          {comment.user.name}
-                        </p>
-                        <small className="text-gray-500 mr-0">
-                          {new Date(comment.created_at).toLocaleString()}
-                        </small>
+              <div className="max-h-80 overflow-y-auto">
+                {comments.map((comment: Comment) => (
+                  <div key={comment.id} className="border-b py-2">
+                    <div className="flex flex-col justify-between">
+                      <div className="flex flex-row justify-between">
+                        <div className="flex flex-row">
+                          <p className="font-semibold text-black">
+                            {comment.user.name}
+                          </p>
+                          <small className="text-gray-500 my-auto pl-2">
+                            {formatTimeAgo(comment.created_at)}
+                          </small>
+                        </div>
+                        <div className="pr-2 flex gap-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleLikeComment(comment.id);
+                            }}
+                          >
+                            {comment.liked ? (
+                              <span className="text-red-600">❤️</span>
+                            ) : (
+                              <span className="text-red-400">🤍</span>
+                            )}
+                          </button>
+                          <span className="text-xs text-black my-auto">
+                            {comment.likes_count}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex flex-row">
-                        <p className="text-gray-500">{"> "}</p>
-                        <p className="text-black">{comment.content}</p>
-                      </div>
+                      <p className="text-gray-700">{comment.content}</p>
                     </div>
-                  ))}
-                </div>
-                <form onSubmit={handleCommentSubmit} className="mt-2">
-                  <textarea
-                    className="border w-full p-2 text-black"
-                    rows={3}
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    placeholder="Write a comment..."
-                    required
-                  />
-                  <button
-                    type="submit"
-                    className="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                  >
-                    Comment
-                  </button>
-                </form>
+                  </div>
+                ))}
               </div>
-
               <button
-                className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                onClick={handleCloseModal}
+                onClick={() => setSelectedPost(null)}
+                className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
               >
                 Close
               </button>
@@ -275,25 +333,21 @@ const PostPage = () => {
           </div>
         )}
 
-        {/* Add Post Modal */}
-        {isModalOpen && !selectedPost && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-8 rounded-lg w-full max-w-md">
-              <h2 className="text-2xl font-bold mb-4 text-black">Add Post</h2>
-              <PostForm
-                onPostCreated={handlePostCreated}
-                closeModel={handleCloseModal}
-              />
-              <button
-                className="mt-4 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                onClick={handleCloseModal}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
+        <Fab
+          onClick={() => setIsCreateModalOpen(true)}
+          color="primary"
+          aria-label="add"
+          className="fixed bottom-16 right-8"
+        >
+          <AddIcon />
+        </Fab>
+        {isCreateModalOpen && (
+          <PostForm
+            onPostCreated={handlePostCreated}
+            onClose={() => setIsCreateModalOpen(false)}
+          />
         )}
-      </Container>
+      </div>
     </div>
   );
 };

@@ -3,19 +3,10 @@
 import React, { useEffect, useState } from "react";
 import ProductList from "./components/ProductList";
 import SalesAnalysis from "./components/SalesAnalysis";
-import SalesChart from "./components/SalesChart"; // Import the new SalesChart component
-import SoldProductsList from "./components/SoldProductList"; // Import SoldProductsList
+import SalesChart from "./components/SalesChart";
+import SoldProductsList from "./components/SoldProductList";
 import axios from "axios";
 import { useConstants } from "@/context/ConstantsContext";
-import {
-  Container,
-  Grid,
-  Button,
-  Typography,
-  Card,
-  CardContent,
-  CircularProgress,
-} from "@mui/material";
 
 interface SalesData {
   total_sales: number;
@@ -52,113 +43,73 @@ const Dashboard = () => {
 
   if (!data) {
     return (
-      <Container
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "100vh",
-        }}
-      >
-        <CircularProgress />
-      </Container>
+      <div className="flex justify-center items-center h-screen">
+        <div className="loader"></div>
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen py-20 bg-gray-100">
-      <Container className="flex flex-col min-h-screen py-20">
-        <Typography variant="h4" gutterBottom align="center" color="black">
+    <div className="flex flex-col min-h-screen py-10 bg-gray-100">
+      <div className="container mx-auto py-20">
+        <h2 className="text-3xl font-bold text-center mb-8 text-black">
           Farmer Dashboard
-        </Typography>
+        </h2>
 
-        <Card>
-          <CardContent>
-            <Grid container spacing={2} justifyContent="center">
-              <Grid item>
-                <Button
-                  variant={period === "1day" ? "contained" : "outlined"}
-                  onClick={() => setPeriod("1day")}
-                  sx={{ color: "black" }}
-                >
-                  Last 1 Day
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button
-                  variant={period === "30days" ? "contained" : "outlined"}
-                  onClick={() => setPeriod("30days")}
-                  sx={{ color: "black" }}
-                >
-                  Last 30 Days
-                </Button>
-              </Grid>
-              <Grid item>
-                <Button
-                  variant={period === "1year" ? "contained" : "outlined"}
-                  onClick={() => setPeriod("1year")}
-                  sx={{ color: "black" }}
-                >
-                  Last 1 Year
-                </Button>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
+        <div className="bg-white shadow-md rounded-lg p-4 mb-8">
+          <div className="flex justify-center space-x-4">
+            <button
+              className={`${
+                period === "1day" ? "bg-blue-500 text-white" : "bg-gray-200"
+              } px-4 py-2 rounded`}
+              onClick={() => setPeriod("1day")}
+            >
+              Last 1 Day
+            </button>
+            <button
+              className={`${
+                period === "30days" ? "bg-blue-500 text-white" : "bg-gray-200"
+              } px-4 py-2 rounded`}
+              onClick={() => setPeriod("30days")}
+            >
+              Last 30 Days
+            </button>
+            <button
+              className={`${
+                period === "1year" ? "bg-blue-500 text-white" : "bg-gray-200"
+              } px-4 py-2 rounded`}
+              onClick={() => setPeriod("1year")}
+            >
+              Last 1 Year
+            </button>
+          </div>
+        </div>
 
-        <Grid container spacing={4} style={{ marginTop: "20px" }}>
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent>
-                <SalesAnalysis
-                  totalSales={data.total_sales}
-                  totalRevenue={data.total_revenue}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Card>
-              <CardContent>
-                <ProductList products={data.product_sales} />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <SalesAnalysis
+              totalSales={data.total_sales}
+              totalRevenue={data.total_revenue}
+              salesData={data.product_sales.map((product) => ({
+                name: product.name,
+                quantitySold: product.quantity_sold,
+              }))}
+            />
+          </div>
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <ProductList products={data.product_sales} />
+          </div>
+        </div>
 
-        <Grid container spacing={4} style={{ marginTop: "20px" }}>
-          <Grid item xs={12}>
-            <Card>
-              <CardContent>
-                <SalesChart
-                  productSales={data.product_sales} // Pass product sales directly
-                  period={period}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
+        <div className="mb-8">
+          <SalesChart productSales={data.product_sales} period={period} />
+        </div>
 
-        {/* New SoldProductsList Component */}
-        <Grid container spacing={4} style={{ marginTop: "20px" }}>
-          <Grid item xs={12}>
-            <Card>
-              <CardContent>
-                <Typography variant="h5" gutterBottom>
-                  My Products
-                </Typography>
-                <SoldProductsList
-                // Now soldProducts will be fetched in the SoldProductsList component itself
-                // onAddProduct={(product) => {
-                // Handle adding a new product
-                // console.log("Product added:", product);
-                // }}
-                />
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Container>
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <h3 className="text-2xl font-bold mb-4">My Products</h3>
+          <SoldProductsList />
+        </div>
+      </div>
     </div>
   );
 };

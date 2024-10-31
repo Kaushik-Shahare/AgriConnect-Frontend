@@ -43,29 +43,41 @@ export default function Navbar() {
             {!isAuthenticated ? (
               <>
                 <Link href="/signin">
-                  <Button color="inherit">Sign In</Button>
+                  <Button color="inherit" sx={{ textTransform: "none" }}>
+                    Sign In
+                  </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button color="inherit">Sign Up</Button>
+                  <Button color="inherit" sx={{ textTransform: "none" }}>
+                    Sign Up
+                  </Button>
                 </Link>
               </>
             ) : (
               <>
                 <Link href="/home">
-                  <Button color="inherit">Home</Button>
+                  <Button color="inherit" sx={{ textTransform: "none" }}>
+                    Home
+                  </Button>
                 </Link>
                 {usertype === "farmer" && (
                   <Link href="/dashboard">
-                    <Button color="inherit">Dashboard</Button>
+                    <Button color="inherit" sx={{ textTransform: "none" }}>
+                      Dashboard
+                    </Button>
                   </Link>
                 )}
                 {usertype === "farmer" && (
                   <Link href="/post">
-                    <Button color="inherit">Posts</Button>
+                    <Button color="inherit" sx={{ textTransform: "none" }}>
+                      Posts
+                    </Button>
                   </Link>
                 )}
                 <Link href="/purchasehistory">
-                  <Button color="inherit">My Orders</Button>
+                  <Button color="inherit" sx={{ textTransform: "none" }}>
+                    My Orders
+                  </Button>
                 </Link>
                 <IconButton
                   aria-label="more"

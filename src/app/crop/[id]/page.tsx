@@ -3,16 +3,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useRouter, useParams } from "next/navigation";
-import {
-  Container,
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
-  Button,
-  Grid,
-  TextField, // Import TextField for quantity input
-} from "@mui/material";
 import { useConstants } from "@/context/ConstantsContext";
 import { useAuth } from "@/context/AuthContext";
 import { SellerDetailsCard } from "../components/SellerDetails";
@@ -67,7 +57,7 @@ export default function CropDetailPage() {
   }, [id, token]);
 
   if (!crop) {
-    return <div>Loading...</div>;
+    return <div className="text-center py-20">Loading...</div>;
   }
 
   const handlePurchase = async () => {
@@ -93,7 +83,7 @@ export default function CropDetailPage() {
         }
       );
       alert("Purchase successful!");
-      // router.push("/orders");
+      router.push("/purchasehistory");
     } catch (error: any) {
       if (error.response && error.response.data) {
         // Check for specific backend validation errors
@@ -119,89 +109,68 @@ export default function CropDetailPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen py-20 bg-gray-100">
-      <Container>
-        <Card>
-          <Grid container spacing={4}>
-            {/* Left side: Image */}
-            <Grid item xs={12} md={6}>
-              <CardMedia
-                component="img"
-                alt={crop.name}
-                height="400"
-                image={crop.image || "/images/default-crop.jpeg"}
-              />
-            </Grid>
-            {/* Right side: Details */}
-            <Grid item xs={12} md={6}>
-              <CardContent>
-                <Typography variant="h4" gutterBottom>
-                  {crop.name}
-                </Typography>
-                <Typography variant="body1" paragraph>
-                  {crop.description}
-                </Typography>
-                <Typography variant="h6" color="primary" paragraph>
-                  Price: ₹{crop.price} per kg
-                </Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Available Quantity: {crop.quantity} kg
-                </Typography>
-                <Typography variant="body2" color="text.secondary" paragraph>
-                  Seller: {crop.user.email}
-                </Typography>
+    <div className="flex flex-col min-h-screen py-20 bg-gray-100 px-4 md:px-10 lg:px-40">
+      <div className="container mx-auto p-4 bg-white rounded shadow-lg">
+        <div className="flex flex-col md:flex-row gap-8">
+          {/* Left side: Image */}
+          <div className="md:w-1/2">
+            <img
+              src={crop.image || "/images/default-crop.jpeg"}
+              alt={crop.name}
+              className="rounded-lg h-80 w-full object-cover mb-4 md:h-96"
+            />
+          </div>
+          {/* Right side: Details */}
+          <div className="md:w-1/2 p-4">
+            <h2 className="text-2xl md:text-3xl font-bold">{crop.name}</h2>
+            <p className="mt-2 text-gray-700">{crop.description}</p>
+            <p className="mt-4 text-xl text-blue-600">
+              Price: ₹{crop.price} per kg
+            </p>
+            <p className="mt-2 text-gray-500">
+              Available Quantity: {crop.quantity} kg
+            </p>
+            <p className="mt-2 text-gray-500">Seller: {crop.user.email}</p>
 
-                {/* Conditional Rendering for Sold Out and Quantity Selector */}
-                {crop.quantity === 0 ? (
-                  <Typography variant="h6" color="error" paragraph>
-                    Sold Out
-                  </Typography>
-                ) : (
-                  <>
-                    {/* Quantity Selector */}
-                    <TextField
-                      label="Select Quantity"
-                      type="number"
-                      value={purchaseQuantity}
-                      onChange={(e) =>
-                        setPurchaseQuantity(Number(e.target.value))
-                      }
-                      inputProps={{ min: 1, max: crop.quantity }}
-                      fullWidth
-                      margin="normal"
-                    />
-
-                    {/* Display Error Message */}
-                    {errorMessage && (
-                      <Typography color="error" variant="body2">
-                        {errorMessage}
-                      </Typography>
-                    )}
-
-                    {/* Buy Button */}
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      fullWidth
-                      onClick={handlePurchase}
-                    >
-                      Buy
-                    </Button>
-                  </>
+            {/* Conditional Rendering for Sold Out and Quantity Selector */}
+            {crop.quantity === 0 ? (
+              <p className="mt-4 text-red-600 text-xl">Sold Out</p>
+            ) : (
+              <>
+                {/* Quantity Selector */}
+                <input
+                  type="number"
+                  value={purchaseQuantity}
+                  onChange={(e) => setPurchaseQuantity(Number(e.target.value))}
+                  min="1"
+                  max={crop.quantity}
+                  className="mt-4 border border-gray-300 rounded-lg p-2 w-full"
+                  placeholder="Select Quantity"
+                />
+                {/* Display Error Message */}
+                {errorMessage && (
+                  <p className="mt-2 text-red-600">{errorMessage}</p>
                 )}
-              </CardContent>
-            </Grid>
-          </Grid>
-        </Card>
-      </Container>
+                {/* Buy Button */}
+                <button
+                  onClick={handlePurchase}
+                  className="mt-4 bg-blue-600 text-white py-2 rounded-lg w-full hover:bg-blue-700 transition"
+                >
+                  Buy
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
 
-      <Container className="pt-5">
+      <div className="pt-5">
         <SellerDetailsCard seller={crop.user} />
-      </Container>
+      </div>
 
-      <Container className="pt-5">
+      <div className="pt-5">
         <OtherGoods farmerId={crop.user.id} currentCropId={crop.id} />
-      </Container>
+      </div>
     </div>
   );
 }

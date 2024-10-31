@@ -1,24 +1,6 @@
 "use client";
 
 import React from "react";
-import {
-  Card,
-  CardMedia,
-  CardContent,
-  Typography,
-  Button,
-  styled,
-} from "@mui/material";
-
-// Styled Card component for hover effect
-const HoverCard = styled(Card)(({ theme }) => ({
-  transition: "transform 0.3s ease, box-shadow 0.3s ease",
-  cursor: "pointer", // Add pointer cursor on hover
-  "&:hover": {
-    transform: "scale(1.05)", // Scale up on hover
-    boxShadow: theme.shadows[6], // Increase shadow on hover
-  },
-}));
 
 interface CropCardProps {
   id: number;
@@ -42,26 +24,28 @@ export const CropCard: React.FC<CropCardProps> = ({
   onClick,
 }) => {
   return (
-    <HoverCard onClick={() => onClick(id)}>
-      <CardMedia
-        component="img"
+    <div
+      onClick={() => onClick(id)}
+      className="bg-white border border-gray-300 rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-lg cursor-pointer"
+    >
+      <img
+        src={image || "/images/default-crop.jpeg"}
         alt={name}
-        height="200"
-        image={image || "/images/default-crop.jpeg"}
+        className="w-full h-48 object-cover"
       />
-      <CardContent>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography variant="h6" fontSize={20}>
-            {name}
-          </Typography>
-          <Typography variant="h5" fontSize={20}>
-            ₹{price}
-          </Typography>
+      <div className="p-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg font-semibold text-gray-800">{name}</h2>
+          <span className="text-lg font-semibold text-gray-900">₹{price}</span>
         </div>
-      </CardContent>
-      <Button variant="contained" color="primary" fullWidth>
+        <p className="text-sm text-gray-600 mt-2">{description}</p>
+      </div>
+      <button
+        onClick={() => onClick(id)}
+        className="w-full bg-blue-600 text-white py-2 text-center font-semibold hover:bg-blue-700 transition-colors duration-300"
+      >
         Buy Now
-      </Button>
-    </HoverCard>
+      </button>
+    </div>
   );
 };

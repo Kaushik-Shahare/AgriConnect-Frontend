@@ -19,7 +19,7 @@ ChartJS.register(
   LineElement,
   Tooltip,
   Legend,
-  PointElement // Register PointElement for line charts
+  PointElement
 );
 
 interface SalesChartProps {
@@ -127,9 +127,9 @@ const SalesChart: React.FC<SalesChartProps> = ({ productSales, period }) => {
   );
 
   return (
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <div style={{ width: "45%" }}>
-        <h3 className="text-black">Product Sales</h3>
+    <div className="flex justify-between gap-8">
+      <div className="w-1/2 bg-white rounded-lg shadow-lg p-2">
+        <h3 className="text-lg font-semibold text-black">Product Sales</h3>
         <Bar
           data={barChartData}
           options={{
@@ -143,8 +143,10 @@ const SalesChart: React.FC<SalesChartProps> = ({ productSales, period }) => {
           }}
         />
       </div>
-      <div style={{ width: "45%" }}>
-        <h3 className="text-black">Growth Rate Over Time</h3>
+      <div className="w-1/2 bg-white rounded-lg shadow-lg p-4">
+        <h3 className="text-lg font-semibold text-black">
+          Growth Rate Over Time
+        </h3>
         <Line data={lineChartData} options={{ responsive: true }} />
       </div>
     </div>

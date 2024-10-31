@@ -2,11 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Grid, Typography } from "@mui/material";
 import { CropCard } from "./CropCard"; // Adjust the import based on your structure
 import { useAuth } from "@/context/AuthContext";
 import { useConstants } from "@/context/ConstantsContext";
-
 import PropTypes from "prop-types";
 import { useRouter } from "next/navigation";
 
@@ -31,29 +29,26 @@ export const OtherGoods: React.FC<OtherGoodsProps> = ({
     };
   }
 
-  const [otherGoods, setOtherGoods] = useState<Good[]>([]); // Adjust type as needed
+  const [otherGoods, setOtherGoods] = useState<Good[]>([]);
   const { token } = useAuth();
   const { BACKEND_URL } = useConstants();
   const router = useRouter();
 
   useEffect(() => {
-    // Ensure token is available before making the request
     if (token == null) {
       return;
     }
 
-    // Fetch other goods sold by the same farmer
     const fetchOtherGoods = async () => {
       try {
         const response = await axios.get(
           `${BACKEND_URL}/api/crop/list/${farmerId}/`,
           {
             headers: {
-              Authorization: `Bearer ${token}`, // Pass the token in the header
+              Authorization: `Bearer ${token}`,
             },
           }
         );
-        // Exclude the current product from the list of other goods
         const goods = response.data.filter(
           (item: { id: number }) => item.id !== currentCropId
         );
@@ -64,49 +59,44 @@ export const OtherGoods: React.FC<OtherGoodsProps> = ({
     };
 
     fetchOtherGoods();
-  }, [token, farmerId, currentCropId]); // Ensure useEffect runs when token, farmerId, or currentCropId changes
+  }, [token, farmerId, currentCropId]);
 
   OtherGoods.propTypes = {
-    farmerId: PropTypes.number.isRequired, // ID of the farmer
-    currentCropId: PropTypes.number.isRequired, // ID of the current crop
+    farmerId: PropTypes.number.isRequired,
+    currentCropId: PropTypes.number.isRequired,
   };
 
-  // useEffect(() => {
-  //   if (otherGoods.length === 0) {
-  //     return (
-  //       <Typography color="black">
-  //         No other goods available from this farmer.
-  //       </Typography>
-  //     );
-  //   }
-  // }, [otherGoods]);
-
   const handleClick = (id: number) => {
-    // Handle click event
-    router.push(`/crop/${id}`); // Replace with the correct path
+    router.push(`/crop/${id}`);
   };
 
   return (
     <div>
-      <Typography variant="h5" gutterBottom color="black">
+      <h5 className="text-black text-2xl font-semibold mb-4">
         Other Goods Sold by This Farmer
-      </Typography>
-      <Grid container spacing={4}>
-        {otherGoods.map((good) => (
-          <Grid item xs={12} sm={6} md={4} key={good.id}>
-            <CropCard
-              id={good.id}
-              name={good.name}
-              description={good.description}
-              price={good.price}
-              quantity={good.quantity}
-              image={good.image}
-              sellerEmail={good.user.email}
-              onClick={() => handleClick(good.id)} // Replace with navigation
-            />
-          </Grid>
-        ))}
-      </Grid>
+      </h5>
+      <div className="border rounded-lg shadow-lg">
+        <div className="px-8 py-4 relative">
+          <div className="flex overflow-x-auto pb-2">
+            {otherGoods.map((good) => (
+              <div key={good.id} className="min-w-[300px] mr-2">
+                <CropCard
+                  id={good.id}
+                  name={good.name}
+                  description={good.description}
+                  price={good.price}
+                  quantity={good.quantity}
+                  image={good.image}
+                  sellerEmail={good.user.email}
+                  onClick={() => handleClick(good.id)}
+                />
+              </div>
+            ))}
+            {/* Gradient shade on the right side */}
+            <div className="absolute top-0 right-0 bottom-0 w-[100px] bg-gradient-to-l from-black to-transparent pointer-events-none" />
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

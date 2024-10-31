@@ -3,8 +3,8 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="image-container flex items-center justify-center mb-16">
+    <div className="min-h-screen bg-gray-100">
+      <div className="image-container flex items-center justify-center mb-12">
         <header className="header-bg text-center">
           <h1 className="text-4xl font-bold mb-4 text-white">
             Welcome to AgriConnect
@@ -15,17 +15,17 @@ export default function Home() {
         </header>
       </div>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-        <div className="p-6 bg-white rounded-lg shadow-lg">
-          <h2 className="text-2xl font-semibold mb-2 text-black">
+      <section className="grid grid-cols-1 sm:grid-cols-2 gap-8 p-8">
+        <div className="p-6 bg-white rounded-lg shadow-lg py-10">
+          <h2 className="text-4xl font-semibold mb-2 text-black">
             About AgriConnect
           </h2>
-          <p className="text-gray-700 mb-4">
+          <p className="text-gray-700 mb-4 text-2xl">
             AgriConnect is a platform that allows farmers to connect with each
             other, share knowledge with agricultural experts, and find a
             marketplace to sell their products directly to consumers.
           </p>
-          <p className="text-gray-700 mb-4">
+          <p className="text-gray-700 mb-4 text-2xl">
             Our mission is to empower the farming community by providing a
             simple, efficient, and accessible solution to network and thrive.
           </p>
@@ -42,13 +42,13 @@ export default function Home() {
             alt="Farmers working in the field"
             width={500}
             height={300}
-            className="rounded-md"
+            className="rounded-md mx-auto"
           />
         </div>
       </section>
 
-      <section className="mt-16">
-        <h2 className="text-3xl font-bold text-center mb-8 text-black">
+      <section className="mt-16 p-8">
+        <h2 className="text-3xl font-bold text-center mb-8 text-black underline">
           Features
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">

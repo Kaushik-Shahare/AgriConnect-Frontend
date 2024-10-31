@@ -1,13 +1,4 @@
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Typography,
-} from "@mui/material";
 import axios from "axios";
 import { useConstants } from "@/context/ConstantsContext";
 
@@ -29,18 +20,14 @@ const AddQuantity: React.FC<AddQuantityProps> = ({
   const { BACKEND_URL } = useConstants();
 
   const handleAddQuantity = async () => {
-    if (localStorage.getItem("token") == null) {
-      return;
-    }
+    if (!localStorage.getItem("token")) return;
 
     try {
       await axios.post(
         `${BACKEND_URL}/api/crop/farmer/crop/add-quantity/${productId}/`,
         { quantity },
         {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
 
@@ -53,29 +40,43 @@ const AddQuantity: React.FC<AddQuantityProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Add More Quantity</DialogTitle>
-      <DialogContent>
-        {error && <Typography color="error">{error}</Typography>}{" "}
-        {/* Display error message */}
-        <TextField
-          margin="dense"
-          label="Additional Quantity"
+    <div
+      className={`fixed inset-0 flex items-center justify-center ${
+        open ? "block" : "hidden"
+      }`}
+    >
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 p-6">
+        <h2 className="text-xl font-semibold mb-4">Add More Quantity</h2>
+        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+
+        <input
           type="number"
-          fullWidth
+          placeholder="Additional Quantity"
+          className="w-full border border-gray-300 rounded-md p-2 mb-3"
           value={quantity}
           onChange={(e) => setQuantity(Number(e.target.value))}
         />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleAddQuantity} color="primary">
-          Add Quantity
-        </Button>
-      </DialogActions>
-    </Dialog>
+
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={onClose}
+            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md mr-2"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleAddQuantity}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+          >
+            Add Quantity
+          </button>
+        </div>
+      </div>
+      <div
+        className="fixed inset-0 bg-black opacity-50"
+        onClick={onClose}
+      ></div>
+    </div>
   );
 };
 

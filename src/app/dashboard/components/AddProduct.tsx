@@ -1,17 +1,4 @@
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  TextField,
-  Typography,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-} from "@mui/material";
 import axios from "axios";
 import { useConstants } from "@/context/ConstantsContext";
 
@@ -36,36 +23,25 @@ const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [price, setPrice] = useState(0);
-  const [error, setError] = useState(""); // State for error messages
+  const [error, setError] = useState("");
   const { BACKEND_URL } = useConstants();
 
-  // Define your categories
   const categories = ["fruit", "vegetable", "grain", "dairy", "other"];
 
   const handleAddProduct = async () => {
-    if (localStorage.getItem("token") == null) {
-      return;
-    }
+    if (!localStorage.getItem("token")) return;
+
     try {
       const response = await axios.post(
         `${BACKEND_URL}/api/crop/farmer/crop/`,
+        { name, description, category, quantity, price: price.toString() },
         {
-          name,
-          description,
-          category,
-          quantity,
-          price: price.toString(), // Convert to string if needed
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         }
       );
 
-      // Call onAdd with the new product data if API call is successful
       onAdd({
-        id: response.data.id, // Ensure you return an id when adding
+        id: response.data.id,
         name: response.data.name,
         description: response.data.description,
         category: response.data.category,
@@ -73,7 +49,6 @@ const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
         price: response.data.price,
       });
 
-      // Reset form fields and close modal
       setName("");
       setDescription("");
       setCategory("");
@@ -81,73 +56,84 @@ const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
       setPrice(0);
       onClose();
     } catch (err) {
-      setError("Failed to add product. Please try again."); // Handle the error
+      setError("Failed to add product. Please try again.");
       console.error(err);
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle>Add Sold Product</DialogTitle>
-      <DialogContent>
-        {error && <Typography color="error">{error}</Typography>}{" "}
-        {/* Display error message */}
-        <TextField
-          margin="dense"
-          label="Product Name"
-          fullWidth
+    <div
+      className={`fixed inset-0 flex items-center justify-center ${
+        open ? "block" : "hidden"
+      }`}
+    >
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 p-6">
+        <h2 className="text-xl font-semibold mb-4">Add Sold Product</h2>
+        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+
+        <input
+          type="text"
+          placeholder="Product Name"
+          className="w-full border border-gray-300 rounded-md p-2 mb-3"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <TextField
-          margin="dense"
-          label="Product Description"
-          fullWidth
+
+        <input
+          type="text"
+          placeholder="Product Description"
+          className="w-full border border-gray-300 rounded-md p-2 mb-3"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-        <FormControl fullWidth margin="dense">
-          <InputLabel id="category-label" sx={{ color: "text.primary" }}>
-            Category
-          </InputLabel>
-          <Select
-            labelId="category-label"
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            {categories.map((cat) => (
-              <MenuItem key={cat} value={cat}>
-                {cat}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <TextField
-          margin="dense"
-          label="Quantity"
+
+        <select
+          className="w-full border border-gray-300 rounded-md p-2 mb-3"
+          value={category}
+          onChange={(e) => setCategory(e.target.value)}
+        >
+          <option value="" disabled>
+            Select Category
+          </option>
+          {categories.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+
+        <input
           type="number"
-          fullWidth
+          placeholder="Quantity"
+          className="w-full border border-gray-300 rounded-md p-2 mb-3"
           value={quantity}
           onChange={(e) => setQuantity(Number(e.target.value))}
         />
-        <TextField
-          margin="dense"
-          label="Price"
+
+        <input
           type="number"
-          fullWidth
+          placeholder="Price"
+          className="w-full border border-gray-300 rounded-md p-2 mb-3"
           value={price}
           onChange={(e) => setPrice(Number(e.target.value))}
         />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Cancel
-        </Button>
-        <Button onClick={handleAddProduct} color="primary">
-          Add
-        </Button>
-      </DialogActions>
-    </Dialog>
+
+        <div className="flex justify-end mt-4">
+          <button
+            onClick={onClose}
+            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md mr-2"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleAddProduct}
+            className="bg-blue-500 text-white px-4 py-2 rounded-md"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

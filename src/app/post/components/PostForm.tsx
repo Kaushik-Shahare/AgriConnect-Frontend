@@ -7,7 +7,7 @@ import { useConstants } from "@/context/ConstantsContext";
 
 interface PostFormProps {
   onPostCreated: (newPost: any) => void;
-  closeModel: () => void;
+  onClose: () => void;
 }
 
 const PostForm = ({ onPostCreated }: PostFormProps) => {
@@ -46,7 +46,7 @@ const PostForm = ({ onPostCreated }: PostFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="bg-white rounded ">
       <textarea
         value={content}
         onChange={(e) => setContent(e.target.value)}

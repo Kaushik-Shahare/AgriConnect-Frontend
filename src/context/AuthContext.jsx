@@ -38,7 +38,7 @@ export function AuthProvider({ children }) {
     setUserId(null);
     setIsAuthenticated(false);
     setProfileImage(null);
-    router.push("/signin");
+    router.push("/");
   };
 
   const updateProfileImage = (newProfileImage) => {

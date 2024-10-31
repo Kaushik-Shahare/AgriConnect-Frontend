@@ -1,20 +1,11 @@
-// pages/ViewProfile.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { useConstants } from "@/context/ConstantsContext";
-import {
-  Container,
-  Typography,
-  Button,
-  Paper,
-  Grid,
-  CircularProgress,
-} from "@mui/material";
-import { Settings } from "@mui/icons-material";
 import PostPage from "./components/MyPosts";
+import { Settings } from "@mui/icons-material"; // Import icon separately if needed
 
 const DEFAULT_IMAGE_URL = "./images/default_profile.jpg"; // Replace with your default image URL
 
@@ -23,6 +14,7 @@ const ViewProfile = () => {
   const { BACKEND_URL } = useConstants();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -38,6 +30,7 @@ const ViewProfile = () => {
         setProfile(response.data);
       } catch (err) {
         console.error("Error fetching profile:", err);
+        setError("Failed to fetch profile. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -48,99 +41,89 @@ const ViewProfile = () => {
     }
   }, [token]);
 
-  if (loading) return <CircularProgress />;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
+    );
+
+  if (error) return <div className="text-red-500 text-center">{error}</div>;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-100">
-      <Container component="main" maxWidth="md" className="py-10">
-        <Paper elevation={3} style={{ padding: "2rem", marginTop: "2rem" }}>
-          {/* Top section with profile image and user information */}
-          <Typography variant="h4" align="left" gutterBottom>
-            My Profile
-          </Typography>
+    <div className="flex flex-col items-center justify-center min-h-screen py-20 bg-gray-100 ">
+      <div className="container mx-auto py-10">
+        {/* Top section with profile image and user information */}
+        <div className="bg-white shadow-md rounded-lg p-6">
+          <h1 className="text-2xl font-bold text-left">My Profile</h1>
           <div className="flex justify-between items-center pb-6">
             <div className="flex items-center">
               <img
                 src={profile?.profile_image || DEFAULT_IMAGE_URL}
                 alt="Profile"
-                style={{ width: "150px", height: "150px", borderRadius: "50%" }}
-                className="border border-gray-900"
+                className="w-36 h-36 rounded-full border border-gray-900"
               />
               <div className="ml-4">
-                <Typography variant="h5" gutterBottom>
-                  {profile?.name}
-                </Typography>
-                <Typography variant="body1" color="textSecondary">
-                  @{profile?.username}
-                </Typography>
+                <h2 className="text-xl font-semibold">{profile?.name}</h2>
+                <p className="text-gray-500">@{profile?.username}</p>
               </div>
             </div>
             {/* Edit Profile Button */}
-            <Button
-              variant="contained"
+            <button
               onClick={() => (window.location.href = "/profile/edit")}
-              sx={{
-                backgroundColor: "lightgrey",
-                color: "black",
-                "&:hover": {
-                  backgroundColor: "#777",
-                },
-                borderRadius: "50%",
-                padding: "12px",
-                minWidth: "auto",
-              }}
+              className="bg-gray-300 text-black rounded-full p-3 hover:bg-gray-400 transition"
+              aria-label="Edit Profile"
             >
-              {/* Edit Profile */}
               <Settings />
-            </Button>
+            </button>
           </div>
 
           {/* Profile details */}
-          <Grid container spacing={3} style={{ marginTop: "1rem" }}>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            <div className="col-span-1">
+              <p className="font-medium">
                 <strong>Email: </strong> {profile?.email}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
+              </p>
+            </div>
+            <div className="col-span-1">
+              <p className="font-medium">
                 <strong>Phone: </strong> {profile?.phone}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
+              </p>
+            </div>
+            <div className="col-span-1">
+              <p className="font-medium">
                 <strong>Address: </strong> {profile?.address}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
+              </p>
+            </div>
+            <div className="col-span-1">
+              <p className="font-medium">
                 <strong>City: </strong> {profile?.city}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
+              </p>
+            </div>
+            <div className="col-span-1">
+              <p className="font-medium">
                 <strong>State: </strong> {profile?.state}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
+              </p>
+            </div>
+            <div className="col-span-1">
+              <p className="font-medium">
                 <strong>Country: </strong> {profile?.country}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Typography variant="subtitle1">
+              </p>
+            </div>
+            <div className="col-span-1">
+              <p className="font-medium">
                 <strong>Zip Code: </strong> {profile?.zip}
-              </Typography>
-            </Grid>
-          </Grid>
-        </Paper>
-      </Container>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <Container component="main" maxWidth="md">
-        <Paper elevation={3}>
+      <div className="container mx-auto mt-10">
+        <div className="bg-white shadow-md rounded-lg">
           <PostPage />
-        </Paper>
-      </Container>
+        </div>
+      </div>
     </div>
   );
 };
