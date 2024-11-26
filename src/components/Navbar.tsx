@@ -10,8 +10,9 @@ import {
   Menu,
   MenuItem,
   IconButton,
+  TextField,
 } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import SearchBar from "./SearchBar";
 
 export default function Navbar() {
   const { isAuthenticated, profile_image, logout, usertype } = useAuth();
@@ -34,92 +35,102 @@ export default function Navbar() {
     <AppBar position="fixed" sx={{ backgroundColor: "#1f2937" }}>
       <div className="px-20">
         <Toolbar>
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            <Link href="/" style={{ textDecoration: "none", color: "white" }}>
-              AgriConnect
-            </Link>
-          </Typography>
-          <div>
-            {!isAuthenticated ? (
-              <>
-                <Link href="/signin">
-                  <Button color="inherit" sx={{ textTransform: "none" }}>
-                    Sign In
-                  </Button>
-                </Link>
-                <Link href="/signup">
-                  <Button color="inherit" sx={{ textTransform: "none" }}>
-                    Sign Up
-                  </Button>
-                </Link>
-              </>
-            ) : (
-              <>
-                <Link href="/home">
-                  <Button color="inherit" sx={{ textTransform: "none" }}>
-                    Home
-                  </Button>
-                </Link>
-                {usertype === "farmer" && (
-                  <Link href="/dashboard">
+          <div className="flex flex-row justify-between w-full">
+            <Typography variant="h6" component="div">
+              <Link
+                href="/home"
+                style={{ textDecoration: "none", color: "white" }}
+              >
+                AgriConnect
+              </Link>
+            </Typography>
+            <div className="w-3/4">{usertype === "buyer" && <SearchBar />}</div>
+            <div>
+              {!isAuthenticated ? (
+                <>
+                  <Link href="/signin">
                     <Button color="inherit" sx={{ textTransform: "none" }}>
-                      Dashboard
+                      Sign In
                     </Button>
                   </Link>
-                )}
-                {usertype === "farmer" && (
-                  <Link href="/post">
+                  <Link href="/signup">
                     <Button color="inherit" sx={{ textTransform: "none" }}>
-                      Posts
+                      Sign Up
                     </Button>
                   </Link>
-                )}
-                <Link href="/purchasehistory">
-                  <Button color="inherit" sx={{ textTransform: "none" }}>
-                    My Orders
-                  </Button>
-                </Link>
-                <IconButton
-                  aria-label="more"
-                  aria-controls="long-menu"
-                  aria-haspopup="true"
-                  onClick={handleMenuClick}
-                  color="inherit"
-                >
-                  {/* <MoreVertIcon /> */}
-                  <img
-                    src={
-                      profile_image ||
-                      "https://res.cloudinary.com/dkfdmcxsz/image/upload/v1728890065/h8k9chejvd75xv2ms2dv.png"
-                    }
-                    alt="profile"
-                    className="rounded-full h-8 w-8 border border-white"
-                  />
-                </IconButton>
-                <Menu
-                  id="long-menu"
-                  anchorEl={anchorEl}
-                  open={Boolean(anchorEl)}
-                  onClose={handleMenuClose}
-                  PaperProps={{
-                    style: {
-                      maxHeight: 48 * 4.5 + 8,
-                      width: "20ch",
-                    },
-                  }}
-                >
-                  <MenuItem onClick={handleMenuClose}>
-                    <Link
-                      href="/profile"
-                      style={{ textDecoration: "none", color: "inherit" }}
-                    >
-                      My Profile
+                </>
+              ) : (
+                <>
+                  <div className="flex flex-row">
+                    {usertype === "buyer" && (
+                      <Link href="/cart">
+                        <Button color="inherit" sx={{ textTransform: "none" }}>
+                          Cart
+                        </Button>
+                      </Link>
+                    )}
+                    {usertype === "farmer" && (
+                      <Link href="/dashboard">
+                        <Button color="inherit" sx={{ textTransform: "none" }}>
+                          Dashboard
+                        </Button>
+                      </Link>
+                    )}
+                    {usertype === "farmer" && (
+                      <Link href="/post">
+                        <Button color="inherit" sx={{ textTransform: "none" }}>
+                          Posts
+                        </Button>
+                      </Link>
+                    )}
+                    <Link href="/purchasehistory">
+                      <Button color="inherit" sx={{ textTransform: "none" }}>
+                        My Orders
+                      </Button>
                     </Link>
-                  </MenuItem>
-                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                </Menu>
-              </>
-            )}
+                    <IconButton
+                      aria-label="more"
+                      aria-controls="long-menu"
+                      aria-haspopup="true"
+                      onClick={handleMenuClick}
+                      color="inherit"
+                    >
+                      {/* <MoreVertIcon /> */}
+                      <img
+                        src={
+                          profile_image ||
+                          "https://res.cloudinary.com/dkfdmcxsz/image/upload/v1728890065/h8k9chejvd75xv2ms2dv.png"
+                        }
+                        alt="profile"
+                        className="rounded-full h-8 w-8 border border-white"
+                      />
+                    </IconButton>
+                    <Menu
+                      id="long-menu"
+                      anchorEl={anchorEl}
+                      open={Boolean(anchorEl)}
+                      onClose={handleMenuClose}
+                      PaperProps={{
+                        style: {
+                          maxHeight: 48 * 4.5 + 8,
+                          width: "20ch",
+                        },
+                      }}
+                    >
+                      <MenuItem onClick={handleMenuClose}>
+                        <Link
+                          href="/profile"
+                          style={{ textDecoration: "none", color: "inherit" }}
+                        >
+                          My Profile
+                        </Link>
+                      </MenuItem>
+                      <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                    </Menu>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </Toolbar>
       </div>

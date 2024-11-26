@@ -23,7 +23,7 @@ export const OtherGoods: React.FC<OtherGoodsProps> = ({
     description: string;
     price: number;
     quantity: number;
-    image: string;
+    image_url: string;
     user: {
       email: string;
     };
@@ -86,7 +86,7 @@ export const OtherGoods: React.FC<OtherGoodsProps> = ({
                   description={good.description}
                   price={good.price}
                   quantity={good.quantity}
-                  image={good.image}
+                  image_url={good.image_url}
                   sellerEmail={good.user.email}
                   onClick={() => handleClick(good.id)}
                 />

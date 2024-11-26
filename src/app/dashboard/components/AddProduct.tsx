@@ -1,20 +1,31 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useConstants } from "@/context/ConstantsContext";
+import {
+  TextField,
+  Button,
+  MenuItem,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogActions,
+  Typography,
+} from "@mui/material";
 
 interface SoldProduct {
-  id?: number; // ID is optional for adding products
+  id?: number;
   name: string;
   description: string;
   category: string;
   quantity: number;
   price: number;
+  imageUrl?: string;
 }
 
 interface AddProductProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (product: SoldProduct) => void; // Expect SoldProduct directly
+  onAdd: (product: SoldProduct) => void;
 }
 
 const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
@@ -23,20 +34,45 @@ const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState(0);
   const [price, setPrice] = useState(0);
+  const [image, setImage] = useState<File | null>(null);
   const [error, setError] = useState("");
   const { BACKEND_URL } = useConstants();
 
-  const categories = ["fruit", "vegetable", "grain", "dairy", "other"];
+  const categories = [
+    "fruit",
+    "vegetable",
+    "grain",
+    "dairy",
+    "meat",
+    "seafood",
+    "poultry",
+    "spice",
+    "herb",
+    "other",
+  ];
 
   const handleAddProduct = async () => {
     if (!localStorage.getItem("token")) return;
 
     try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("category", category);
+      formData.append("quantity", quantity.toString());
+      formData.append("price", price.toString());
+      if (image) {
+        formData.append("image", image);
+      }
+
       const response = await axios.post(
         `${BACKEND_URL}/api/crop/farmer/crop/`,
-        { name, description, category, quantity, price: price.toString() },
+        formData,
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
@@ -47,6 +83,7 @@ const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
         category: response.data.category,
         quantity: response.data.quantity,
         price: response.data.price,
+        imageUrl: response.data.image_url,
       });
 
       setName("");
@@ -54,6 +91,7 @@ const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
       setCategory("");
       setQuantity(0);
       setPrice(0);
+      setImage(null);
       onClose();
     } catch (err) {
       setError("Failed to add product. Please try again.");
@@ -62,78 +100,85 @@ const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
   };
 
   return (
-    <div
-      className={`fixed inset-0 flex items-center justify-center ${
-        open ? "block" : "hidden"
-      }`}
-    >
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 p-6">
-        <h2 className="text-xl font-semibold mb-4">Add Sold Product</h2>
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle>Add Sold Product</DialogTitle>
+      <DialogContent>
+        {error && (
+          <Typography color="error" variant="body2" gutterBottom>
+            {error}
+          </Typography>
+        )}
 
-        <input
-          type="text"
-          placeholder="Product Name"
-          className="w-full border border-gray-300 rounded-md p-2 mb-3"
+        <TextField
+          label="Product Name"
+          variant="outlined"
+          fullWidth
           value={name}
           onChange={(e) => setName(e.target.value)}
+          margin="normal"
         />
 
-        <input
-          type="text"
-          placeholder="Product Description"
-          className="w-full border border-gray-300 rounded-md p-2 mb-3"
+        <TextField
+          label="Product Description"
+          variant="outlined"
+          fullWidth
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          margin="normal"
         />
 
-        <select
-          className="w-full border border-gray-300 rounded-md p-2 mb-3"
+        <TextField
+          select
+          label="Category"
+          variant="outlined"
+          fullWidth
           value={category}
           onChange={(e) => setCategory(e.target.value)}
+          margin="normal"
         >
-          <option value="" disabled>
-            Select Category
-          </option>
           {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
+            <MenuItem key={cat} value={cat}>
+              {cat.charAt(0).toUpperCase() + cat.slice(1)}
+            </MenuItem>
           ))}
-        </select>
+        </TextField>
 
-        <input
+        <TextField
+          label="Quantity"
           type="number"
-          placeholder="Quantity"
-          className="w-full border border-gray-300 rounded-md p-2 mb-3"
+          variant="outlined"
+          fullWidth
           value={quantity}
           onChange={(e) => setQuantity(Number(e.target.value))}
+          margin="normal"
+        />
+
+        <TextField
+          label="Price"
+          type="number"
+          variant="outlined"
+          fullWidth
+          value={price}
+          onChange={(e) => setPrice(Number(e.target.value))}
+          margin="normal"
         />
 
         <input
-          type="number"
-          placeholder="Price"
-          className="w-full border border-gray-300 rounded-md p-2 mb-3"
-          value={price}
-          onChange={(e) => setPrice(Number(e.target.value))}
+          accept="image/*"
+          type="file"
+          onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
+          style={{ marginTop: "1rem" }}
         />
-
-        <div className="flex justify-end mt-4">
-          <button
-            onClick={onClose}
-            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md mr-2"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleAddProduct}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-          >
-            Add
-          </button>
-        </div>
-      </div>
-    </div>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="secondary">
+          Cancel
+        </Button>
+        <Button onClick={handleAddProduct} color="primary" variant="contained">
+          Add
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

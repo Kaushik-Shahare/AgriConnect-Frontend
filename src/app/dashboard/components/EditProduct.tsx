@@ -1,152 +1,182 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useConstants } from "@/context/ConstantsContext";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Button,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
 
 interface SoldProduct {
-  id?: number; // ID is optional for adding products
+  id?: number;
   name: string;
   description: string;
   category: string;
   quantity: number;
   price: number;
+  imageUrl?: string;
 }
 
 interface AddProductProps {
   open: boolean;
   onClose: () => void;
-  onAdd: (product: SoldProduct) => void; // Expect SoldProduct directly
-  onEdit?: (product: SoldProduct) => void; // Optional onEdit function
-  product?: SoldProduct; // Optional product prop for editing
+  onAdd: (product: SoldProduct) => void;
+  onEdit?: (product: SoldProduct) => void;
+  product?: SoldProduct;
 }
 
-const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [quantity, setQuantity] = useState(0);
-  const [price, setPrice] = useState(0);
-  const [error, setError] = useState(""); // State for error messages
+const AddProduct: React.FC<AddProductProps> = ({
+  open,
+  onClose,
+  onAdd,
+  onEdit,
+  product,
+}) => {
+  const [name, setName] = useState(product?.name || "");
+  const [description, setDescription] = useState(product?.description || "");
+  const [category, setCategory] = useState(product?.category || "");
+  const [quantity, setQuantity] = useState(product?.quantity || 0);
+  const [price, setPrice] = useState(product?.price || 0);
+  const [image, setImage] = useState<File | null>(null);
+  const [error, setError] = useState("");
   const { BACKEND_URL } = useConstants();
 
-  // Define your categories
   const categories = ["fruit", "vegetable", "grain", "dairy", "other"];
 
-  const handleAddProduct = async () => {
-    if (localStorage.getItem("token") == null) {
-      return;
+  useEffect(() => {
+    if (product) {
+      setName(product.name);
+      setDescription(product.description);
+      setCategory(product.category);
+      setQuantity(product.quantity);
+      setPrice(product.price);
     }
+  }, [product]);
+
+  const handleAddProduct = async () => {
+    if (!localStorage.getItem("token")) return;
+
     try {
-      const response = await axios.post(
-        `${BACKEND_URL}/api/crop/farmer/crop/`,
-        {
-          name,
-          description,
-          category,
-          quantity,
-          price: price.toString(), // Convert to string if needed
-        },
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("category", category);
+      formData.append("quantity", quantity.toString());
+      formData.append("price", price.toString());
+      if (image) {
+        formData.append("image", image);
+      }
+
+      const response = await axios.patch(
+        `${BACKEND_URL}/api/crop/farmer/crop/${product?.id}/`,
+        formData,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
 
-      // Call onAdd with the new product data if API call is successful
-      onAdd({
-        id: response.data.id, // Ensure you return an id when adding
+      const newProduct = {
+        id: response.data.id,
         name: response.data.name,
         description: response.data.description,
         category: response.data.category,
         quantity: response.data.quantity,
         price: response.data.price,
-      });
+        imageUrl: response.data.image_url,
+      };
 
-      // Reset form fields and close modal
-      setName("");
-      setDescription("");
-      setCategory("");
-      setQuantity(0);
-      setPrice(0);
+      if (onAdd) onAdd(newProduct);
+      resetForm();
       onClose();
     } catch (err) {
-      setError("Failed to add product. Please try again."); // Handle the error
+      setError("Failed to add product. Please try again.");
       console.error(err);
     }
   };
 
+  const resetForm = () => {
+    setName("");
+    setDescription("");
+    setCategory("");
+    setQuantity(0);
+    setPrice(0);
+    setImage(null);
+  };
+
   return (
-    <div
-      className={`fixed inset-0 flex items-center justify-center ${
-        open ? "block" : "hidden"
-      }`}
-    >
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 p-6">
-        <h2 className="text-xl font-semibold mb-4">Add Sold Product</h2>
-        {error && <p className="text-red-500 text-sm mb-2">{error}</p>}{" "}
-        {/* Display error message */}
-        <input
-          type="text"
-          placeholder="Product Name"
-          className="border border-gray-300 rounded-md p-2 mb-3 w-full"
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle>{product ? "Edit Product" : "Add Product"}</DialogTitle>
+      <DialogContent>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+        <TextField
+          label="Product Name"
+          fullWidth
+          margin="normal"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <input
-          type="text"
-          placeholder="Product Description"
-          className="border border-gray-300 rounded-md p-2 mb-3 w-full"
+        <TextField
+          label="Description"
+          fullWidth
+          margin="normal"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-        <select
-          className="border border-gray-300 rounded-md p-2 mb-3 w-full"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        >
-          <option value="" disabled>
-            Select Category
-          </option>
-          {categories.map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
-        <input
+        <FormControl fullWidth margin="normal">
+          <InputLabel>Category</InputLabel>
+          <Select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          >
+            {categories.map((cat) => (
+              <MenuItem key={cat} value={cat}>
+                {cat}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <TextField
+          label="Quantity"
           type="number"
-          placeholder="Quantity"
-          className="border border-gray-300 rounded-md p-2 mb-3 w-full"
+          fullWidth
+          margin="normal"
           value={quantity}
           onChange={(e) => setQuantity(Number(e.target.value))}
         />
-        <input
+        <TextField
+          label="Price"
           type="number"
-          placeholder="Price"
-          className="border border-gray-300 rounded-md p-2 mb-3 w-full"
+          fullWidth
+          margin="normal"
           value={price}
           onChange={(e) => setPrice(Number(e.target.value))}
         />
-        <div className="flex justify-end mt-4">
-          <button
-            onClick={onClose}
-            className="bg-gray-300 text-gray-700 px-4 py-2 rounded-md mr-2"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleAddProduct}
-            className="bg-blue-500 text-white px-4 py-2 rounded-md"
-          >
-            Add
-          </button>
-        </div>
-      </div>
-      <div
-        className="fixed inset-0 bg-black opacity-50"
-        onClick={onClose}
-      ></div>
-    </div>
+        <input
+          accept="image/*"
+          type="file"
+          onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
+          style={{ marginTop: "1rem" }}
+        />
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} color="secondary">
+          Cancel
+        </Button>
+        <Button onClick={handleAddProduct} color="primary">
+          {product ? "Update" : "Add"}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

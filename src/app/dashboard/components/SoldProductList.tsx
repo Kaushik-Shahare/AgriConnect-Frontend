@@ -21,6 +21,7 @@ interface SoldProduct {
   updated_at?: string;
   description?: string;
   category?: string;
+  image_url?: string;
 }
 
 const SoldProductsList: React.FC = () => {
@@ -130,25 +131,36 @@ const SoldProductsList: React.FC = () => {
               key={product.id}
               className="border rounded-md p-4 mb-2 relative bg-white shadow"
             >
-              <h3 className="text-lg font-bold">{product.name}</h3>
-              <p>Quantity: {product.quantity}</p>
-              <p>Category: {product.category || "N/A"}</p>
-              <p>
-                Price at Sale: Rs.{" "}
-                {product.price ? product.price.toFixed(2) : "N/A"}
-              </p>
-              <p>
-                Listed at:{" "}
-                {product.created_at
-                  ? new Date(product.created_at).toLocaleDateString()
-                  : "N/A"}
-              </p>
-              <p>
-                Updated Date:{" "}
-                {product.updated_at
-                  ? new Date(product.updated_at).toLocaleDateString()
-                  : "N/A"}
-              </p>
+              <div className="grid grid-cols-3 justify-start">
+                <div>
+                  <img
+                    src={product.image_url || "/images/default-crop.jpeg"}
+                    alt={product.name}
+                    className="w-400 h-40 object-cover rounded-md"
+                  />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold">{product.name}</h3>
+                  <p>Quantity: {product.quantity}</p>
+                  <p>Category: {product.category || "N/A"}</p>
+                  <p>
+                    Price at Sale: Rs.{" "}
+                    {product.price ? product.price.toFixed(2) : "N/A"}
+                  </p>
+                  <p>
+                    Listed at:{" "}
+                    {product.created_at
+                      ? new Date(product.created_at).toLocaleDateString()
+                      : "N/A"}
+                  </p>
+                  <p>
+                    Updated Date:{" "}
+                    {product.updated_at
+                      ? new Date(product.updated_at).toLocaleDateString()
+                      : "N/A"}
+                  </p>
+                </div>
+              </div>
               <div className="absolute right-2 top-2 flex space-x-2">
                 <button
                   onClick={() => handleOpenEditModal(product)}

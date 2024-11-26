@@ -98,7 +98,7 @@ const PostPage = () => {
                 <img
                   src={post.image_url}
                   alt="Post"
-                  className="w-full h-80 object-cover rounded-md" // Added rounded corners
+                  className="w-full h-80 object-cover rounded-md"
                 />
               ) : (
                 <div className="bg-gray-300 flex items-center justify-center text-gray-600 w-full h-48 rounded-md">
@@ -114,10 +114,10 @@ const PostPage = () => {
           ))}
         </div>
 
-        {/* Post Modal - To view individual post content */}
+        {/* Post Modal */}
         {isModalOpen && selectedPost && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg w-full max-w-md overflow-y-auto">
+            <div className="bg-white p-6 rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
               <h2 className="text-2xl font-bold mb-4 text-black">
                 {selectedPost.user.name}'s Post
               </h2>
@@ -139,7 +139,7 @@ const PostPage = () => {
               </div>
 
               {/* Comments section */}
-              <div className="mt-4">
+              <div className="mt-4 max-h-48 overflow-y-auto">
                 <h3 className="text-lg font-semibold">Comments:</h3>
                 {comments.length > 0 ? (
                   comments.map((comment) => (

@@ -8,7 +8,7 @@ interface CropCardProps {
   description: string;
   price: number;
   quantity: number;
-  image?: string;
+  image_url?: string;
   sellerEmail: string;
   onClick: (id: number) => void;
 }
@@ -19,7 +19,7 @@ export const CropCard: React.FC<CropCardProps> = ({
   description,
   price,
   quantity,
-  image,
+  image_url,
   sellerEmail,
   onClick,
 }) => {
@@ -29,7 +29,7 @@ export const CropCard: React.FC<CropCardProps> = ({
       onClick={() => onClick(id)}
     >
       <img
-        src={image || "/images/default-crop.jpeg"}
+        src={image_url || "/images/default-crop.jpeg"}
         alt={name}
         className="w-full h-48 object-cover"
       />

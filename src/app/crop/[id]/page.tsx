@@ -14,7 +14,7 @@ interface CropDetail {
   description: string;
   price: number;
   quantity: number;
-  image?: string;
+  image_url?: string;
   user: {
     email: string;
     id: number;
@@ -115,7 +115,7 @@ export default function CropDetailPage() {
           {/* Left side: Image */}
           <div className="md:w-1/2">
             <img
-              src={crop.image || "/images/default-crop.jpeg"}
+              src={crop.image_url || "/images/default-crop.jpeg"}
               alt={crop.name}
               className="rounded-lg h-80 w-full object-cover mb-4 md:h-96"
             />
