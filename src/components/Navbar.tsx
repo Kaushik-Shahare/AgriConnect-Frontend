@@ -13,6 +13,8 @@ import {
   TextField,
 } from "@mui/material";
 import SearchBar from "./SearchBar";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 
 export default function Navbar() {
   const { isAuthenticated, profile_image, logout, usertype } = useAuth();
@@ -64,9 +66,10 @@ export default function Navbar() {
                   <div className="flex flex-row">
                     {usertype === "buyer" && (
                       <Link href="/cart">
-                        <Button color="inherit" sx={{ textTransform: "none" }}>
-                          Cart
-                        </Button>
+                        <FontAwesomeIcon
+                          icon={faShoppingCart}
+                          className="text-2xl text-white p-2"
+                        />
                       </Link>
                     )}
                     {usertype === "farmer" && (
@@ -84,7 +87,11 @@ export default function Navbar() {
                       </Link>
                     )}
                     <Link href="/purchasehistory">
-                      <Button color="inherit" sx={{ textTransform: "none" }}>
+                      <Button
+                        className="px-2"
+                        color="inherit"
+                        sx={{ textTransform: "none" }}
+                      >
                         My Orders
                       </Button>
                     </Link>

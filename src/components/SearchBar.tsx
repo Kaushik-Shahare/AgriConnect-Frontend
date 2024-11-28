@@ -4,6 +4,8 @@ import { useConstants } from "@/context/ConstantsContext";
 import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 const SearchBar: React.FC = () => {
   const { BACKEND_URL } = useConstants();
@@ -53,19 +55,35 @@ const SearchBar: React.FC = () => {
     router.push(`/search?query=${searchTerm}`);
   };
 
+  const handleInputBlur = () => {
+    // Small delay to allow clicking on a recommendation before closing
+    setTimeout(() => setOpen(false), 150);
+  };
+
+  const handleInputFocus = () => {
+    if (recommendations.length > 0) {
+      setOpen(true);
+    }
+  };
+
   return (
     <div className="flex flex-col w-full relative px-32">
       {/* Search bar */}
-      <div className="flex flex-row w-full">
+      <div className="flex flex-row w-full gap-1">
         <TextField
           id="outlined-basic"
           label="Search"
           variant="outlined"
           size="small"
           onChange={handleInputChange}
+          onBlur={handleInputBlur}
+          onFocus={handleInputFocus}
           className="bg-white w-full h-10 rounded"
           value={searchTerm}
         />
+        <div className="relative right-[2rem] top-2">
+          <FontAwesomeIcon icon={faSearch} className="text-gray-500" />
+        </div>
         <Button
           color="inherit"
           sx={{ textTransform: "none" }}
@@ -87,7 +105,8 @@ const SearchBar: React.FC = () => {
               key={index}
               className="p-2 hover:bg-gray-200 cursor-pointer flex justify-between items-center"
               onClick={() => {
-                setSearchTerm(item.name), setOpen(false);
+                setSearchTerm(item.name);
+                setOpen(false);
               }}
             >
               <div className="flex flex-row">

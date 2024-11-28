@@ -10,7 +10,7 @@ import { Settings } from "@mui/icons-material"; // Import icon separately if nee
 const DEFAULT_IMAGE_URL = "./images/default_profile.jpg"; // Replace with your default image URL
 
 const ViewProfile = () => {
-  const { token } = useAuth();
+  const { token, usertype } = useAuth();
   const { BACKEND_URL } = useConstants();
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -119,11 +119,13 @@ const ViewProfile = () => {
         </div>
       </div>
 
-      <div className="container mx-auto mt-10">
-        <div className="bg-white shadow-md rounded-lg">
-          <PostPage />
+      {usertype === "farmer" && (
+        <div className="container mx-auto mt-10">
+          <div className="bg-white shadow-md rounded-lg">
+            <PostPage />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

@@ -108,6 +108,54 @@ export default function CropDetailPage() {
     }
   };
 
+  const handleAddToCart = async () => {
+    if (token == null) {
+      return;
+    }
+    setErrorMessage(null); // Reset any previous error messages
+    if (purchaseQuantity > crop.quantity || purchaseQuantity <= 0) {
+      setErrorMessage(
+        "Invalid quantity selected. Please select a valid amount."
+      );
+      return;
+    }
+
+    try {
+      await axios.post(
+        `${BACKEND_URL}/api/cart/add-to-cart/`,
+        { quantity: purchaseQuantity, crop: id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      alert("Added to cart!");
+      router.push("/cart");
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        // Check for specific backend validation errors
+        const { detail, code } = error.response.data;
+
+        if (code === "own_crop_error") {
+          setErrorMessage("You cannot add your own crop to the cart.");
+        } else if (code === "stock_error") {
+          setErrorMessage(
+            `Insufficient quantity in stock. Available quantity: ${crop.quantity} kg.`
+          );
+        } else if (code === "invalid_quantity") {
+          setErrorMessage(
+            "Invalid quantity. Quantity must be greater than zero."
+          );
+        } else {
+          setErrorMessage("An unexpected error occurred. Please try again.");
+        }
+      } else {
+        setErrorMessage("An error occurred while adding to the cart.");
+      }
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen py-20 bg-gray-100 px-4 md:px-10 lg:px-40">
       <div className="container mx-auto p-4 bg-white rounded shadow-lg">
@@ -157,6 +205,12 @@ export default function CropDetailPage() {
                   className="mt-4 bg-blue-600 text-white py-2 rounded-lg w-full hover:bg-blue-700 transition"
                 >
                   Buy
+                </button>
+                <button
+                  onClick={handleAddToCart}
+                  className="mt-4 bg-blue-600 text-white py-2 rounded-lg w-full hover:bg-blue-700 transition"
+                >
+                  Add to Cart
                 </button>
               </>
             )}

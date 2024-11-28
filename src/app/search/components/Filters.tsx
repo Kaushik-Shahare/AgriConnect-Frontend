@@ -8,6 +8,20 @@ interface FiltersProps {
   }) => void;
 }
 
+// Define the crop categories
+const cropCategories = [
+  { value: "vegetable", label: "Vegetable" },
+  { value: "fruit", label: "Fruit" },
+  { value: "grain", label: "Grain" },
+  { value: "dairy", label: "Dairy" },
+  { value: "meat", label: "Meat" },
+  { value: "poultry", label: "Poultry" },
+  { value: "seafood", label: "Seafood" },
+  { value: "herb", label: "Herb" },
+  { value: "spice", label: "Spice" },
+  { value: "other", label: "Other" },
+];
+
 export const Filters: React.FC<FiltersProps> = ({ onApplyFilters }) => {
   const [minPrice, setMinPrice] = useState<number | undefined>();
   const [maxPrice, setMaxPrice] = useState<number | undefined>();
@@ -56,9 +70,11 @@ export const Filters: React.FC<FiltersProps> = ({ onApplyFilters }) => {
           className="border border-gray-300 rounded-md p-2 w-full"
         >
           <option value="">All Categories</option>
-          <option value="fruits">Fruits</option>
-          <option value="vegetables">Vegetables</option>
-          <option value="dairy">Dairy</option>
+          {cropCategories.map((cat) => (
+            <option key={cat.value} value={cat.value}>
+              {cat.label}
+            </option>
+          ))}
         </select>
       </div>
 

@@ -28,27 +28,43 @@ export default function SearchPage() {
 
   const query = searchParams.get("query");
   const [searchResults, setSearchResults] = useState<Crop[]>([]);
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState<{
+    minPrice?: number;
+    maxPrice?: number;
+    category?: string;
+  }>({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchSearchResults = async () => {
+    if (!token) return;
+    setLoading(true);
+    setError(null);
+    console.log(filters);
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/crop/search/`, {
+        params: {
+          query,
+          min_price: filters.minPrice,
+          max_price: filters.maxPrice,
+          category: filters.category,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setSearchResults(response.data);
+    } catch (err) {
+      setError("Failed to fetch search results. Please try again.");
+      console.error("Error fetching search results:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!token) return;
-    const fetchSearchResults = async () => {
-      try {
-        const response = await axios.get(
-          `${BACKEND_URL}/api/crop/search/?query=${query}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        setSearchResults(response.data);
-      } catch (error) {
-        console.error("Error fetching search results:", error);
-      }
-    };
     fetchSearchResults();
-  }, [token]);
+  }, [query, filters, token]); // Re-fetch results when query or filters change
 
   const handleCardClick = (cropId: number) => {
     router.push(`/crop/${cropId}`);
@@ -57,25 +73,37 @@ export default function SearchPage() {
   return (
     <div className="flex flex-row min-h-screen py-2 bg-gray-100 pt-24">
       {/* Filter Div */}
-      <Filters onApplyFilters={(filters) => setFilters(filters)} />
-      <div className="bg-white rounded-lg shadow-md p-10 w-full max-w-3xl">
+      <div className="w-1/4 bg-white shadow-md rounded-lg p-6">
+        <Filters onApplyFilters={(newFilters) => setFilters(newFilters)} />
+      </div>
+
+      <div className="flex-1 bg-white rounded-lg shadow-md p-10 ml-4">
         <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
           Search Results
         </h1>
-        <div className="space-y-4">
-          {searchResults.map((crop) => (
-            <CropCard
-              id={crop.id}
-              name={crop.name}
-              description={crop.description}
-              price={crop.price}
-              quantity={crop.quantity}
-              image_url={crop.image_url}
-              sellerEmail={crop.user.email}
-              onClick={() => handleCardClick(crop.id)}
-            />
-          ))}
-        </div>
+        {loading ? (
+          <p className="text-center text-gray-600">Loading...</p>
+        ) : error ? (
+          <p className="text-center text-red-600">{error}</p>
+        ) : searchResults.length > 0 ? (
+          <div className="flex flex-col gap-6">
+            {searchResults.map((crop) => (
+              <CropCard
+                key={crop.id}
+                id={crop.id}
+                name={crop.name}
+                description={crop.description}
+                price={crop.price}
+                quantity={crop.quantity}
+                image_url={crop.image_url}
+                sellerEmail={crop.user.email}
+                onClick={() => handleCardClick(crop.id)}
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-gray-600">No results found.</p>
+        )}
       </div>
     </div>
   );
