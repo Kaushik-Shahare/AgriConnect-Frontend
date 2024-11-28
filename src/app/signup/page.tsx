@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import { useConstants } from "@/context/ConstantsContext";
 import { useRouter } from "next/navigation"; // Import useRouter for redirection
+import Loading from "@/components/Loading";
 
 export default function SignUp() {
   const { BACKEND_URL } = useConstants();
@@ -23,9 +24,11 @@ export default function SignUp() {
   const [userType, setUserType] = useState("farmer");
   const [error, setError] = useState("");
   const router = useRouter(); // Initialize useRouter for redirection
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
@@ -52,7 +55,12 @@ export default function SignUp() {
         setError("An unknown error occurred.");
       }
     }
+    setLoading(false);
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-100">

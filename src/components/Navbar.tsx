@@ -46,7 +46,9 @@ export default function Navbar() {
                 AgriConnect
               </Link>
             </Typography>
-            <div className="w-3/4">{usertype === "buyer" && <SearchBar />}</div>
+            <div className="w-3/4">
+              <SearchBar />
+            </div>
             <div>
               {!isAuthenticated ? (
                 <>

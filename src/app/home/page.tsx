@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 import { CropCard } from "./components/CropCard";
 import Carousel from "./components/Carousel";
 import AIChatAssistant from "@/components/AIChatAssistant";
+import Loading from "@/components/Loading";
 
 export default function HomePage() {
   interface Crop {
@@ -27,9 +28,11 @@ export default function HomePage() {
   const { BACKEND_URL } = useConstants();
   const { token } = useAuth();
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!token) return;
+    setLoading(true);
     const fetchCrops = async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/api/crop/list/`, {
@@ -43,6 +46,7 @@ export default function HomePage() {
       }
     };
     fetchCrops();
+    setLoading(false);
   }, [token]);
 
   const handleCardClick = (cropId: number) => {
@@ -57,11 +61,12 @@ export default function HomePage() {
     return acc;
   }, {} as { [key: string]: Crop[] });
 
+  if (loading) {
+    return <Loading />;
+  }
+
   return (
-    <div
-      className="flex flex-col min-h-screen py-10 bg-gray-100"
-      style={{ right: "0px", bottom: "0px" }}
-    >
+    <div className="flex flex-col min-h-screen py-10 bg-gray-100">
       <AIChatAssistant />
       <div className="flex flex-col gap-4 container mx-auto px-6 py-12">
         {/* Top Section */}

@@ -7,6 +7,7 @@ import PostForm from "./components/PostForm";
 import { useConstants } from "@/context/ConstantsContext";
 import { Fab } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import Loading from "@/components/Loading";
 
 const PostPage = () => {
   interface User {
@@ -45,9 +46,12 @@ const PostPage = () => {
   const { token, userId } = useAuth();
   const { BACKEND_URL } = useConstants();
   const DEFAULT_IMAGE_URL = "/images/default_profile.jpg";
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!token) return;
+
+    setLoading(true);
 
     const fetchPosts = async () => {
       try {
@@ -61,6 +65,7 @@ const PostPage = () => {
     };
 
     fetchPosts();
+    setLoading(false);
   }, [token, BACKEND_URL]);
 
   const fetchComments = async (postId: number) => {
@@ -184,6 +189,10 @@ const PostPage = () => {
     if (interval > 1) return `${interval} minutes ago`;
     return `${seconds} seconds ago`;
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="p-4 flex flex-col min-h-screen py-20 bg-gray-100">

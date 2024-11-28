@@ -6,12 +6,14 @@ import { useAuth } from "@/context/AuthContext";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { CropCard } from "./components/CropCard";
+import Loading from "@/components/Loading";
 
 const CartPage: React.FC = () => {
   const { token } = useAuth();
   const { BACKEND_URL } = useConstants();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [loading, setLoading] = useState(true); // Loading state
   const router = useRouter();
 
   interface CartItem {
@@ -33,6 +35,7 @@ const CartPage: React.FC = () => {
   }
 
   useEffect(() => {
+    setLoading(true); // Start loading
     const fetchCart = async () => {
       try {
         const response = await axios.get(`${BACKEND_URL}/api/cart/cart/`, {
@@ -44,11 +47,15 @@ const CartPage: React.FC = () => {
         setTotalPrice(response.data.total_price);
       } catch (error) {
         console.error("Error fetching cart items:", error);
+      } finally {
+        setLoading(false); // Stop loading
       }
     };
 
     if (token) {
       fetchCart();
+    } else {
+      setLoading(false); // Stop loading if no token
     }
   }, [token]);
 
@@ -105,7 +112,6 @@ const CartPage: React.FC = () => {
   };
 
   const handleCheckout = async () => {
-    alert("Proceeding to checkout!");
     try {
       await axios.post(
         `${BACKEND_URL}/api/cart/checkout/`,
@@ -116,12 +122,16 @@ const CartPage: React.FC = () => {
           },
         }
       );
-      alert("Checkout successful!");
       router.push("/purchasehistory");
     } catch (error) {
       console.error("Error checking out cart:", error);
     }
   };
+
+  if (loading) {
+    // Render loading spinner
+    return <Loading />;
+  }
 
   return (
     <div className="flex flex-col min-h-screen py-20 bg-gray-100">

@@ -7,6 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { CropCard } from "./components/CropCard";
 import { Filters } from "./components/Filters";
+import Loading from "@/components/Loading";
 
 export default function SearchPage() {
   const { BACKEND_URL } = useConstants();
@@ -82,7 +83,7 @@ export default function SearchPage() {
           Search Results
         </h1>
         {loading ? (
-          <p className="text-center text-gray-600">Loading...</p>
+          <Loading />
         ) : error ? (
           <p className="text-center text-red-600">{error}</p>
         ) : searchResults.length > 0 ? (

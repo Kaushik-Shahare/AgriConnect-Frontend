@@ -13,6 +13,7 @@ import {
 import { useConstants } from "@/context/ConstantsContext";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation"; // Import useRouter for redirection
+import Loading from "@/components/Loading";
 
 export default function SignUp() {
   const { BACKEND_URL } = useConstants();
@@ -22,9 +23,11 @@ export default function SignUp() {
   const [error, setError] = useState("");
   const router = useRouter(); // Initialize useRouter for redirection
   const { login } = useAuth();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const response = await axios.post(`${BACKEND_URL}/api/account/login/`, {
@@ -45,7 +48,12 @@ export default function SignUp() {
         setError("An unknown error occurred.");
       }
     }
+    setLoading(false);
   };
+
+  if (loading) {
+    return <Loading />;
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-2 bg-gray-100">

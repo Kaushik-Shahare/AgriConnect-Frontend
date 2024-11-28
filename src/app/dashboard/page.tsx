@@ -7,6 +7,7 @@ import SalesChart from "./components/SalesChart";
 import SoldProductsList from "./components/SoldProductList";
 import axios from "axios";
 import { useConstants } from "@/context/ConstantsContext";
+import Loading from "@/components/Loading";
 
 interface SalesData {
   total_sales: number;
@@ -30,8 +31,10 @@ const Dashboard = () => {
   const [data, setData] = useState<SalesData | null>(null);
   const [period, setPeriod] = useState("30days");
   const { BACKEND_URL } = useConstants();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     axios
       .get(`${BACKEND_URL}/api/crop/dashboard/sales-analysis/${period}/`, {
         headers: {
@@ -39,14 +42,11 @@ const Dashboard = () => {
         },
       })
       .then((response) => setData(response.data));
+    setLoading(false);
   }, [period]);
 
-  if (!data) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="loader"></div>
-      </div>
-    );
+  if (loading || !data) {
+    return <Loading />;
   }
 
   return (

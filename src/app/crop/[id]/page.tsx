@@ -7,6 +7,7 @@ import { useConstants } from "@/context/ConstantsContext";
 import { useAuth } from "@/context/AuthContext";
 import { SellerDetailsCard } from "../components/SellerDetails";
 import { OtherGoods } from "../components/OtherGoods";
+import Loading from "@/components/Loading";
 
 interface CropDetail {
   id: number;
@@ -26,6 +27,7 @@ export default function CropDetailPage() {
   const { id } = useParams(); // Get the crop ID from the URL
   const { BACKEND_URL } = useConstants();
   const { token } = useAuth();
+  const [loading, setLoading] = useState(true);
 
   const [crop, setCrop] = useState<CropDetail | null>(null);
   const [purchaseQuantity, setPurchaseQuantity] = useState<number>(1); // State for quantity input
@@ -37,6 +39,7 @@ export default function CropDetailPage() {
       if (token == null) {
         return;
       }
+      setLoading(true);
       const fetchCropDetails = async () => {
         try {
           const response = await axios.get(
@@ -53,8 +56,13 @@ export default function CropDetailPage() {
         }
       };
       fetchCropDetails();
+      setLoading(false);
     }
   }, [id, token]);
+
+  if (loading) {
+    return <Loading />;
+  }
 
   if (!crop) {
     return <div className="text-center py-20">Loading...</div>;
@@ -82,7 +90,6 @@ export default function CropDetailPage() {
           },
         }
       );
-      alert("Purchase successful!");
       router.push("/purchasehistory");
     } catch (error: any) {
       if (error.response && error.response.data) {
@@ -130,7 +137,6 @@ export default function CropDetailPage() {
           },
         }
       );
-      alert("Added to cart!");
       router.push("/cart");
     } catch (error: any) {
       if (error.response && error.response.data) {

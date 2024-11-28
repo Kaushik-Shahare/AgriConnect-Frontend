@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useConstants } from "@/context/ConstantsContext";
 import PostPage from "./components/MyPosts";
 import { Settings } from "@mui/icons-material"; // Import icon separately if needed
+import Loading from "@/components/Loading";
 
 const DEFAULT_IMAGE_URL = "./images/default_profile.jpg"; // Replace with your default image URL
 
@@ -41,12 +42,7 @@ const ViewProfile = () => {
     }
   }, [token]);
 
-  if (loading)
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-      </div>
-    );
+  if (loading) return <Loading />;
 
   if (error) return <div className="text-red-500 text-center">{error}</div>;
 

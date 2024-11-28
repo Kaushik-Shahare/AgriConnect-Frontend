@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useAuth } from "@/context/AuthContext";
 import { useConstants } from "@/context/ConstantsContext";
+import Loading from "@/components/Loading";
 
 interface Crop {
   id: number;
@@ -54,11 +55,7 @@ export default function PurchaseHistoryPage() {
   }, [token, BACKEND_URL]);
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen py-20 bg-gray-100">
-        Loading...
-      </div>
-    );
+    return <Loading />;
   }
 
   if (errorMessage) {
