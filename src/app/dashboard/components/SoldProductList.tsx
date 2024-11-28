@@ -16,11 +16,11 @@ interface SoldProduct {
   id?: number;
   name: string;
   quantity: number;
-  price?: number;
+  price: number;
   created_at?: string;
   updated_at?: string;
-  description?: string;
-  category?: string;
+  description: string;
+  category: string;
   image_url?: string;
 }
 
@@ -201,6 +201,7 @@ const SoldProductsList: React.FC = () => {
           open={editModalOpen}
           onClose={handleCloseEditModal}
           onEdit={handleEditProduct}
+          onAdd={handleAddProduct}
           product={currentProduct}
         />
       )}
