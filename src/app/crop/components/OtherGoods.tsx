@@ -70,31 +70,65 @@ export const OtherGoods: React.FC<OtherGoodsProps> = ({
     router.push(`/crop/${id}`);
   };
 
+  // Scroll handler functions
+  const scrollLeft = () => {
+    const container = document.getElementById("goodsSlider");
+    if (container) {
+      container.scrollBy({ left: -300, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    const container = document.getElementById("goodsSlider");
+    if (container) {
+      container.scrollBy({ left: 300, behavior: "smooth" });
+    }
+  };
+
   return (
     <div>
       <h5 className="text-black text-2xl font-semibold mb-4">
         Other Goods Sold by This Farmer
       </h5>
-      <div className="border rounded-lg shadow-lg">
-        <div className="px-8 py-4 relative">
-          <div className="flex overflow-x-auto pb-2">
-            {otherGoods.map((good) => (
-              <div key={good.id} className="min-w-[300px] mr-2">
-                <CropCard
-                  id={good.id}
-                  name={good.name}
-                  description={good.description}
-                  price={good.price}
-                  quantity={good.quantity}
-                  image_url={good.image_url}
-                  sellerEmail={good.user.email}
-                  onClick={() => handleClick(good.id)}
-                />
-              </div>
-            ))}
-            {/* Gradient shade on the right side */}
-            <div className="absolute top-0 right-0 bottom-0 w-[100px] bg-gradient-to-l from-black to-transparent pointer-events-none" />
+      <div className="relative">
+        <div className="absolute top-0 left-0 bottom-0 flex items-center">
+          <button
+            onClick={scrollLeft}
+            className="bg-gray-700 text-white p-2 rounded-full hover:bg-gray-600 focus:outline-none"
+          >
+            &#10094;
+          </button>
+        </div>
+        <div className="border rounded-lg shadow-lg">
+          <div className="px-8 py-4">
+            <div
+              id="goodsSlider"
+              className="flex overflow-x-auto scroll-smooth pb-2 gap-4"
+            >
+              {otherGoods.map((good) => (
+                <div key={good.id} className="min-w-[300px] max-w-[300px]">
+                  <CropCard
+                    id={good.id}
+                    name={good.name}
+                    description={good.description}
+                    price={good.price}
+                    quantity={good.quantity}
+                    image_url={good.image_url}
+                    sellerEmail={good.user.email}
+                    onClick={() => handleClick(good.id)}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
+        </div>
+        <div className="absolute top-0 right-0 bottom-0 flex items-center">
+          <button
+            onClick={scrollRight}
+            className="bg-gray-700 text-white p-2 rounded-full hover:bg-gray-600 focus:outline-none"
+          >
+            &#10095;
+          </button>
         </div>
       </div>
     </div>

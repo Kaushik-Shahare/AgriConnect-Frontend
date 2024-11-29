@@ -38,7 +38,7 @@ export const CropCard: React.FC<CropCardProps> = ({
           <h2 className="text-lg font-semibold">{name}</h2>
           <p className="text-lg font-bold text-primary">₹{price}</p>
         </div>
-        <p className="text-sm text-gray-600">{description}</p>
+        <p className="text-sm text-gray-600 line-clamp-2">{description}</p>
         <p className="text-sm text-gray-500">Available: {quantity} kg</p>
       </div>
       <button className="w-full py-2 bg-blue-600 text-white font-semibold hover:bg-blue-700 transition-colors duration-300">
