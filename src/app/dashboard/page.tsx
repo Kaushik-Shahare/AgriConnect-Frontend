@@ -93,6 +93,8 @@ const Dashboard = () => {
               salesData={data.product_sales.map((product) => ({
                 name: product.name,
                 quantitySold: product.quantity_sold,
+                quantity_remaining:
+                  product.quantity_listed - product.quantity_sold,
               }))}
             />
           </div>

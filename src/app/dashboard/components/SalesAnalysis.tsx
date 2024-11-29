@@ -7,7 +7,11 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 interface SalesAnalysisProps {
   totalSales: number;
   totalRevenue: number;
-  salesData: { name: string; quantitySold: number }[]; // Array of product sales data
+  salesData: {
+    name: string;
+    quantitySold: number;
+    quantity_remaining?: number;
+  }[]; // Array of product sales data
 }
 
 const SalesAnalysis: React.FC<SalesAnalysisProps> = ({
@@ -15,14 +19,34 @@ const SalesAnalysis: React.FC<SalesAnalysisProps> = ({
   totalRevenue,
   salesData,
 }) => {
+  const totalProductsRemaining = salesData.reduce(
+    (acc, product) => acc + (product.quantity_remaining || 0),
+    0
+  );
+
   // Prepare data for the Pie chart
   const pieData = {
-    labels: salesData.map((product) => product.name),
+    labels: [...salesData.map((product) => product.name), "Remaining Products"],
     datasets: [
       {
-        data: salesData.map((product) => product.quantitySold),
-        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
-        hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
+        data: [
+          ...salesData.map((product) => product.quantitySold),
+          totalProductsRemaining,
+        ],
+        backgroundColor: [
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#4BC0C0",
+          "#999999", // Color for "Remaining Products"
+        ],
+        hoverBackgroundColor: [
+          "#FF6384",
+          "#36A2EB",
+          "#FFCE56",
+          "#4BC0C0",
+          "#AAAAAA", // Hover color for "Remaining Products"
+        ],
       },
     ],
   };

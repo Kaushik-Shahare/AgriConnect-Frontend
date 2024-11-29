@@ -35,6 +35,7 @@ const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
   const [quantity, setQuantity] = useState(0);
   const [price, setPrice] = useState(0);
   const [image, setImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [error, setError] = useState("");
   const { BACKEND_URL } = useConstants();
 
@@ -51,8 +52,24 @@ const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
     "other",
   ];
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+    setImage(file);
+    if (file) {
+      setImagePreview(URL.createObjectURL(file));
+    } else {
+      setImagePreview(null);
+    }
+  };
+
   const handleAddProduct = async () => {
     if (!localStorage.getItem("token")) return;
+
+    // Validation for mandatory fields
+    if (!name || !description || !category || !image) {
+      setError("All fields including an image are required.");
+      return;
+    }
 
     try {
       const formData = new FormData();
@@ -61,9 +78,7 @@ const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
       formData.append("category", category);
       formData.append("quantity", quantity.toString());
       formData.append("price", price.toString());
-      if (image) {
-        formData.append("image", image);
-      }
+      formData.append("image", image);
 
       const response = await axios.post(
         `${BACKEND_URL}/api/crop/farmer/crop/`,
@@ -92,6 +107,8 @@ const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
       setQuantity(0);
       setPrice(0);
       setImage(null);
+      setImagePreview(null);
+      setError("");
       onClose();
     } catch (err) {
       setError("Failed to add product. Please try again.");
@@ -163,12 +180,22 @@ const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
           margin="normal"
         />
 
-        <input
-          accept="image/*"
-          type="file"
-          onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
-          style={{ marginTop: "1rem" }}
-        />
+        {/* Image Upload and Preview */}
+        <div style={{ marginTop: "1rem" }}>
+          <input
+            accept="image/*"
+            type="file"
+            onChange={handleImageChange}
+            style={{ marginBottom: "1rem" }}
+          />
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="Product Preview"
+              style={{ width: "100%", height: "auto", marginTop: "1rem" }}
+            />
+          )}
+        </div>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="secondary">

@@ -38,7 +38,7 @@ export const CropCard: React.FC<CropCardProps> = ({
           <h2 className="text-lg font-semibold text-gray-800">{name}</h2>
           <span className="text-lg font-semibold text-gray-900">₹{price}</span>
         </div>
-        <p className="text-sm text-gray-600 mt-2">{description}</p>
+        <p className="text-sm text-gray-600 mt-2 line-clamp-2">{description}</p>
       </div>
     </div>
   );

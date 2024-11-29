@@ -91,7 +91,7 @@ export default function PurchaseHistoryPage() {
                     {purchase.crop.name}
                   </h3>
                   <p className="text-gray-600">
-                    Purchased at ₹{purchase.price_at_sale} per kg
+                    Purchased at ₹{purchase.price_at_sale}
                   </p>
                 </div>
                 <div className="text-right">

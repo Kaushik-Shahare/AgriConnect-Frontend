@@ -136,7 +136,7 @@ const SoldProductsList: React.FC = () => {
                   <img
                     src={product.image_url || "/images/default-crop.jpeg"}
                     alt={product.name}
-                    className="w-400 h-40 object-cover rounded-md"
+                    className="w-40 h-40 object-cover rounded-md"
                   />
                 </div>
                 <div>
