@@ -35,7 +35,7 @@ export default function Navbar() {
 
   return (
     <AppBar position="fixed" sx={{ backgroundColor: "#1f2937" }}>
-      <div className="px-20">
+      <div className="px-20 ">
         <Toolbar>
           <div className="flex flex-row justify-between w-full">
             <Typography variant="h6" component="div">
@@ -66,14 +66,6 @@ export default function Navbar() {
               ) : (
                 <>
                   <div className="flex flex-row">
-                    {usertype === "buyer" && (
-                      <Link href="/cart">
-                        <FontAwesomeIcon
-                          icon={faShoppingCart}
-                          className="text-2xl text-white p-2"
-                        />
-                      </Link>
-                    )}
                     {usertype === "farmer" && (
                       <Link href="/dashboard">
                         <Button color="inherit" sx={{ textTransform: "none" }}>
@@ -88,13 +80,19 @@ export default function Navbar() {
                         </Button>
                       </Link>
                     )}
+                    <Link href="/cart">
+                      <FontAwesomeIcon
+                        icon={faShoppingCart}
+                        className="text-2xl text-white p-2"
+                      />
+                    </Link>
                     <Link href="/purchasehistory">
                       <Button
                         className="px-2"
                         color="inherit"
                         sx={{ textTransform: "none" }}
                       >
-                        My Orders
+                        MyOrders
                       </Button>
                     </Link>
                     <IconButton
