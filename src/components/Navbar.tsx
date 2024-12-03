@@ -10,7 +10,7 @@ import {
   Menu,
   MenuItem,
   IconButton,
-  TextField,
+  Box,
 } from "@mui/material";
 import SearchBar from "./SearchBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -34,11 +34,15 @@ export default function Navbar() {
   };
 
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: "#1f2937" }}>
-      <div className="px-20 ">
+    <AppBar position="fixed" sx={{ backgroundColor: "#2d3748" }}>
+      <div className="px-4 sm:px-20">
         <Toolbar>
-          <div className="flex flex-row justify-between w-full">
-            <Typography variant="h6" component="div">
+          <div className="flex justify-between w-full items-center">
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{ fontWeight: "bold" }}
+            >
               <Link
                 href="/home"
                 style={{ textDecoration: "none", color: "white" }}
@@ -46,26 +50,32 @@ export default function Navbar() {
                 AgriConnect
               </Link>
             </Typography>
-            <div className="w-3/4">
+            <div className="flex-grow sm:w-1/3 ml-4">
               <SearchBar />
             </div>
-            <div>
+            <Box>
               {!isAuthenticated ? (
                 <>
                   <Link href="/signin">
-                    <Button color="inherit" sx={{ textTransform: "none" }}>
+                    <Button
+                      color="inherit"
+                      sx={{ textTransform: "none", margin: 1 }}
+                    >
                       Sign In
                     </Button>
                   </Link>
                   <Link href="/signup">
-                    <Button color="inherit" sx={{ textTransform: "none" }}>
+                    <Button
+                      color="inherit"
+                      sx={{ textTransform: "none", margin: 1 }}
+                    >
                       Sign Up
                     </Button>
                   </Link>
                 </>
               ) : (
                 <>
-                  <div className="flex flex-row">
+                  <div className="flex items-center gap-4">
                     {usertype === "farmer" && (
                       <Link href="/dashboard">
                         <Button color="inherit" sx={{ textTransform: "none" }}>
@@ -83,37 +93,32 @@ export default function Navbar() {
                     <Link href="/cart">
                       <FontAwesomeIcon
                         icon={faShoppingCart}
-                        className="text-2xl text-white p-2"
+                        className="text-xl text-white"
                       />
                     </Link>
                     <Link href="/purchasehistory">
-                      <Button
-                        className="px-2"
-                        color="inherit"
-                        sx={{ textTransform: "none" }}
-                      >
-                        MyOrders
+                      <Button color="inherit" sx={{ textTransform: "none" }}>
+                        My Orders
                       </Button>
                     </Link>
                     <IconButton
-                      aria-label="more"
-                      aria-controls="long-menu"
-                      aria-haspopup="true"
                       onClick={handleMenuClick}
                       color="inherit"
+                      sx={{
+                        borderRadius: "50%",
+                        "&:hover": { backgroundColor: "#4A5568" },
+                      }}
                     >
-                      {/* <MoreVertIcon /> */}
                       <img
                         src={
                           profile_image ||
                           "https://res.cloudinary.com/dkfdmcxsz/image/upload/v1728890065/h8k9chejvd75xv2ms2dv.png"
                         }
                         alt="profile"
-                        className="rounded-full h-8 w-8 border border-white"
+                        className="rounded-full h-10 w-10 border-2 border-white"
                       />
                     </IconButton>
                     <Menu
-                      id="long-menu"
                       anchorEl={anchorEl}
                       open={Boolean(anchorEl)}
                       onClose={handleMenuClose}
@@ -137,7 +142,7 @@ export default function Navbar() {
                   </div>
                 </>
               )}
-            </div>
+            </Box>
           </div>
         </Toolbar>
       </div>

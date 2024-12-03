@@ -42,6 +42,7 @@ const AddProduct: React.FC<AddProductProps> = ({ open, onClose, onAdd }) => {
   const categories = [
     "fruit",
     "vegetable",
+    "cereal",
     "grain",
     "dairy",
     "meat",

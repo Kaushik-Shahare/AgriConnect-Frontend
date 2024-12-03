@@ -53,137 +53,92 @@ export default function HomePage() {
     router.push(`/crop/${cropId}`);
   };
 
-  const groupedCrops = crops.reduce((acc, crop) => {
-    if (!acc[crop.category]) {
-      acc[crop.category] = [];
-    }
-    acc[crop.category].push(crop);
-    return acc;
-  }, {} as { [key: string]: Crop[] });
-
   if (loading) {
     return <Loading />;
   }
 
   return (
-    <div className="flex flex-col min-h-screen py-10 bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-green-100 to-green-50">
       <AIChatAssistant />
-      <div className="flex flex-col gap-4 container mx-auto px-6 py-12">
-        {/* Top Section */}
-        <div className="flex flex-row gap-8 border justify-center border-black rounded-lg shadow-lg p-4 h-40 w-full ">
-          <div className="flex flex-col justify-between items-center">
-            <div className="border border-black rounded-full p-1 h-28 w-28 overflow-hidden">
-              <img
-                className="h-full w-full object-cover rounded-full"
-                src="/images/keto.jpeg"
-                alt="food"
-              />
-            </div>
-            <p>Keto</p>
-          </div>
-          <div className="flex flex-col justify-between items-center">
-            <div className="border border-black rounded-full p-1 h-28 w-28 overflow-hidden">
-              <img
-                className="h-full w-full object-cover rounded-full"
-                src="/images/Mediterranean.jpeg"
-                alt="food"
-              />
-            </div>
-            <p>Mediterranean</p>
-          </div>
-          <div className="flex flex-col justify-between items-center">
-            <div className="border border-black rounded-full p-1 h-28 w-28 overflow-hidden">
-              <img
-                className="h-full w-full object-cover rounded-full"
-                src="/images/vegan.jpeg"
-                alt="food"
-              />
-            </div>
-            <p>Vegan</p>
-          </div>
-          <div className="flex flex-col justify-between items-center">
-            <div className="border border-black rounded-full p-1 h-28 w-28 overflow-hidden">
-              <img
-                className="h-full w-full object-cover rounded-full"
-                src="/images/vegetarian.jpeg"
-                alt="food"
-              />
-            </div>
-            <p>Vegetarian</p>
-          </div>
-          <div className="flex flex-col justify-between items-center">
-            <div className="border border-black rounded-full p-1 h-28 w-28 overflow-hidden">
-              <img
-                className="h-full w-full object-cover rounded-full"
-                src="/images/low-carb.jpeg"
-                alt="food"
-              />
-            </div>
-            <p>Low-Carb</p>
-          </div>
+
+      {/* Hero Section */}
+      <div className="relative bg-gradient-to-r from-green-400 to-blue-500 text-white py-16">
+        <div className="container mx-auto px-6 flex flex-col items-center text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Welcome to AgriConnect
+          </h1>
+          <p className="text-lg md:text-xl mb-6">
+            Connecting Farmers, Experts, and Buyers for a Sustainable Future
+          </p>
+          <button className="bg-white text-green-500 font-semibold px-6 py-3 rounded-lg shadow-lg hover:bg-gray-100">
+            Explore Crops
+          </button>
         </div>
+      </div>
 
-        {/* eye catching section */}
-        <div className="flex flex-row gap-8 border justify-center border-black rounded-lg shadow-lg  h-60 w-full overflow-hidden">
-          <Carousel />
-        </div>
-
-        {/* Render crops category */}
-        <div className="flex flex-row gap-8">
-          <div className="grid grid-cols-2 grid-rows-2 gap-4">
-            <div className="relative border border-black rounded-lg shadow-lg p-2 h-40 w-56">
-              <img
-                src="/images/veg.jpeg"
-                alt="food"
-                className="h-full w-full object-cover rounded-lg"
-              />
-              <p className="absolute">Vegetable</p>
-            </div>
-            <div className="border border-black rounded-lg shadow-lg p-2 h-40 w-56">
-              <img
-                src="/images/non-veg 2.jpeg"
-                alt="food"
-                className="h-full w-full object-cover rounded-lg"
-              />
-              <p>Non-Veg</p>
-            </div>
-            <div className="border border-black rounded-lg shadow-lg p-2 h-40 w-56">
-              <img
-                src="/images/dairy 2.jpeg"
-                alt="food"
-                className="h-full w-full object-cover rounded-lg"
-              />
-              <p>Dairy</p>
-            </div>
-            <div className="border border-black rounded-lg shadow-lg p-2 h-40 w-56">
-              <img
-                src="/images/cereals 2.jpeg"
-                alt="food"
-                className="h-full w-full object-cover rounded-lg"
-              />
-              <p>Cereals</p>
-            </div>
-          </div>
-
-          <div className="flex flex-row gap-4">
-            {crops.slice(0, 3).map((crop) => (
-              <div
-                key={crop.id}
-                className="border border-black rounded-lg shadow-lg p-4 w-80"
-              >
-                <CropCard
-                  id={crop.id}
-                  name={crop.name}
-                  description={crop.description}
-                  price={crop.price}
-                  quantity={crop.quantity}
-                  image_url={crop.image_url}
-                  sellerEmail={crop.user.email}
-                  onClick={() => handleCardClick(crop.id)}
+      {/* Categories Section */}
+      <div className="container mx-auto px-6 py-8">
+        <h2 className="text-2xl font-semibold mb-4">Popular Categories</h2>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {[
+            { name: "Cereals", image: "/images/cereals 2.jpeg" },
+            { name: "Dairy", image: "/images/dairy 2.jpeg" },
+            { name: "Vegetarien", image: "/images/vegetarian.jpeg" },
+            { name: "Non-Vegetarian", image: "/images/home-banner2.jpeg" },
+            { name: "Fruits", image: "/images/fruits.jpeg" },
+          ].map((item) => (
+            <div
+              key={item.name}
+              className="flex flex-col items-center gap-2 hover:scale-105 transform transition duration-300"
+            >
+              <div className="h-24 w-24 md:h-28 md:w-28 rounded-full shadow-lg overflow-hidden">
+                <img
+                  className="h-full w-full object-cover"
+                  src={item.image}
+                  alt={item.name}
                 />
               </div>
-            ))}
-          </div>
+              <p className="text-sm md:text-base font-medium">{item.name}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Divider */}
+      <hr className="border-gray-300 my-6 mx-6" />
+
+      {/* Carousel Section */}
+      <div className="container mx-auto px-6 py-8">
+        <h2 className="text-2xl font-semibold mb-4">Explore Our Marketplace</h2>
+        <div className="rounded-lg shadow-lg overflow-hidden">
+          <Carousel />
+        </div>
+      </div>
+
+      {/* Divider */}
+      <hr className="border-gray-300 my-6 mx-6" />
+
+      {/* Featured Crops */}
+      <div className="container mx-auto px-6 py-8">
+        <h2 className="text-2xl font-semibold mb-4">Featured Crops</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {crops.slice(0, 3).map((crop) => (
+            <div
+              key={crop.id}
+              className="rounded-lg shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition"
+            >
+              <CropCard
+                id={crop.id}
+                name={crop.name}
+                description={crop.description}
+                price={crop.price}
+                quantity={crop.quantity}
+                image_url={crop.image_url}
+                sellerEmail={crop.user.email}
+                onClick={() => handleCardClick(crop.id)}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </div>

@@ -48,7 +48,19 @@ const AddProduct: React.FC<AddProductProps> = ({
   const [error, setError] = useState("");
   const { BACKEND_URL } = useConstants();
 
-  const categories = ["fruit", "vegetable", "grain", "dairy", "other"];
+  const categories = [
+    "fruit",
+    "vegetable",
+    "cereal",
+    "grain",
+    "dairy",
+    "meat",
+    "seafood",
+    "poultry",
+    "spice",
+    "herb",
+    "other",
+  ];
 
   useEffect(() => {
     if (product) {
@@ -163,6 +175,7 @@ const AddProduct: React.FC<AddProductProps> = ({
         />
         <input
           accept="image/*"
+          required={false}
           type="file"
           onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
           style={{ marginTop: "1rem" }}

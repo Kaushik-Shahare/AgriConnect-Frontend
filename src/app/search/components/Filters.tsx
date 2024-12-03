@@ -12,6 +12,7 @@ interface FiltersProps {
 const cropCategories = [
   { value: "vegetable", label: "Vegetable" },
   { value: "fruit", label: "Fruit" },
+  { value: "cereal", label: "Cereal" },
   { value: "grain", label: "Grain" },
   { value: "dairy", label: "Dairy" },
   { value: "meat", label: "Meat" },

@@ -50,34 +50,34 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen py-10 bg-gray-100">
-      <div className="container mx-auto py-20">
-        <h2 className="text-3xl font-bold text-center mb-8 text-black">
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <div className="container mx-auto py-16 px-4">
+        <h2 className="text-4xl font-bold text-center mb-8 text-black">
           Farmer Dashboard
         </h2>
 
-        <div className="bg-white shadow-md rounded-lg p-4 mb-8">
-          <div className="flex justify-center space-x-4">
+        <div className="bg-white shadow-lg rounded-xl p-6 mb-8">
+          <div className="flex justify-center space-x-6">
             <button
               className={`${
-                period === "1day" ? "bg-blue-500 text-white" : "bg-gray-200"
-              } px-4 py-2 rounded`}
+                period === "1day" ? "bg-green-500 text-white" : "bg-gray-200"
+              } px-6 py-3 rounded-lg text-lg transition duration-300 hover:bg-green-400`}
               onClick={() => setPeriod("1day")}
             >
               Last 1 Day
             </button>
             <button
               className={`${
-                period === "30days" ? "bg-blue-500 text-white" : "bg-gray-200"
-              } px-4 py-2 rounded`}
+                period === "30days" ? "bg-green-500 text-white" : "bg-gray-200"
+              } px-6 py-3 rounded-lg text-lg transition duration-300 hover:bg-green-400`}
               onClick={() => setPeriod("30days")}
             >
               Last 30 Days
             </button>
             <button
               className={`${
-                period === "1year" ? "bg-blue-500 text-white" : "bg-gray-200"
-              } px-4 py-2 rounded`}
+                period === "1year" ? "bg-green-500 text-white" : "bg-gray-200"
+              } px-6 py-3 rounded-lg text-lg transition duration-300 hover:bg-green-400`}
               onClick={() => setPeriod("1year")}
             >
               Last 1 Year
@@ -85,8 +85,8 @@ const Dashboard = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white shadow-md rounded-lg p-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 mb-8">
+          <div className="bg-white shadow-lg rounded-xl p-6">
             <SalesAnalysis
               totalSales={data.total_sales}
               totalRevenue={data.total_revenue}
@@ -98,7 +98,7 @@ const Dashboard = () => {
               }))}
             />
           </div>
-          <div className="bg-white shadow-md rounded-lg p-6">
+          <div className="bg-white shadow-lg rounded-xl p-6">
             <ProductList products={data.product_sales} />
           </div>
         </div>
@@ -107,8 +107,8 @@ const Dashboard = () => {
           <SalesChart productSales={data.product_sales} period={period} />
         </div>
 
-        <div className="bg-white shadow-md rounded-lg p-6">
-          <h3 className="text-2xl font-bold mb-4">My Products</h3>
+        <div className="bg-white shadow-lg rounded-xl p-6">
+          <h3 className="text-2xl font-semibold mb-4">My Products</h3>
           <SoldProductsList />
         </div>
       </div>

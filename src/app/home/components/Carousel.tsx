@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 
 const Carousel = () => {
-  const images = ["/images/home-banner.jpg", "/images/home-banner2.jpeg"];
+  // const images = ["/images/home-banner.jpg", "/images/home-banner2.jpeg"];
+  const images = [
+    "/images/home-banner.jpg",
+    "/images/home-banner.jpg",
+    "/images/home-banner.jpg",
+  ];
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isSliding, setIsSliding] = useState(false);
 
   // Automatically rotate images every 5 seconds
   useEffect(() => {
@@ -14,65 +18,61 @@ const Carousel = () => {
   }, [activeIndex]);
 
   const goToPrevious = () => {
-    setIsSliding(true);
-    setTimeout(() => {
-      setActiveIndex((prevIndex) =>
-        prevIndex === 0 ? images.length - 1 : prevIndex - 1
-      );
-      setIsSliding(false);
-    }, 500); // Match duration to transition time
+    setActiveIndex((prevIndex) =>
+      prevIndex === 0 ? images.length - 1 : prevIndex - 1
+    );
   };
 
   const goToNext = () => {
-    setIsSliding(true);
-    setTimeout(() => {
-      setActiveIndex((prevIndex) => (prevIndex + 1) % images.length);
-      setIsSliding(false);
-    }, 500); // Match duration to transition time
+    setActiveIndex((prevIndex) => (prevIndex + 1) % images.length);
   };
 
   return (
-    <div className="relative flex flex-col items-center gap-4 border border-black rounded-lg shadow-lg h-60 w-full overflow-hidden">
-      {/* Image display with animation */}
+    <div className="relative flex items-center justify-center h-60 md:h-80 w-full overflow-hidden border border-gray-300 rounded-lg shadow-lg bg-gray-100">
+      {/* Image Display */}
       <div className="relative w-full h-full">
         {images.map((image, index) => (
-          <img
+          <div
             key={index}
-            src={image}
-            alt={`Slide ${index + 1}`}
-            className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 ${
-              index === activeIndex
-                ? "translate-x-0"
-                : index > activeIndex
-                ? "translate-x-full"
-                : "-translate-x-full"
+            className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${
+              index === activeIndex ? "opacity-100" : "opacity-0"
             }`}
-          />
+          >
+            <img
+              src={image}
+              alt={`Slide ${index + 1}`}
+              className="w-full h-full object-cover"
+            />
+          </div>
         ))}
       </div>
 
-      {/* Navigation buttons */}
+      {/* Navigation Buttons */}
       <button
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white px-2 py-1 rounded-full"
         onClick={goToPrevious}
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full shadow-lg transition duration-300"
+        aria-label="Previous Slide"
       >
         ‹
       </button>
       <button
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-700 text-white px-2 py-1 rounded-full"
         onClick={goToNext}
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full shadow-lg transition duration-300"
+        aria-label="Next Slide"
       >
         ›
       </button>
 
       {/* Indicators */}
-      <div className="absolute bottom-4 flex gap-2">
+      <div className="absolute bottom-4 flex gap-3">
         {images.map((_, index) => (
-          <span
+          <button
             key={index}
-            className={`w-3 h-3 rounded-full ${
-              index === activeIndex ? "bg-gray-800" : "bg-gray-400"
+            className={`w-3 h-3 rounded-full transition-all duration-300 ${
+              index === activeIndex ? "bg-blue-600 scale-125" : "bg-gray-400"
             }`}
+            onClick={() => setActiveIndex(index)}
+            aria-label={`Go to slide ${index + 1}`}
           />
         ))}
       </div>

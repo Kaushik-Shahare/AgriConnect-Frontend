@@ -47,14 +47,30 @@ export default function SearchPage() {
     if (!token) return;
     setLoading(true);
     setError(null);
+
+    const params: { [key: string]: any } = {};
+
+    // Include query only if it's not empty
+    if (query) {
+      params.query = query;
+    }
+
+    // Include filters only if they are set
+    if (filters.minPrice) {
+      params.min_price = filters.minPrice;
+    }
+
+    if (filters.maxPrice) {
+      params.max_price = filters.maxPrice;
+    }
+
+    if (filters.category) {
+      params.category = filters.category;
+    }
+
     try {
       const response = await axios.get(`${BACKEND_URL}/api/crop/search/`, {
-        params: {
-          query,
-          min_price: filters.minPrice,
-          max_price: filters.maxPrice,
-          category: filters.category,
-        },
+        params,
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -68,21 +84,29 @@ export default function SearchPage() {
     }
   };
 
+  // Call search whenever the query, filters or token change
   useEffect(() => {
-    if (query) {
-      fetchSearchResults();
-    }
+    fetchSearchResults();
   }, [query, filters, token]); // Re-fetch results when query or filters change
 
   const handleCardClick = (cropId: number) => {
     router.push(`/crop/${cropId}`);
   };
 
+  const handleApplyFilters = (newFilters: {
+    minPrice?: number;
+    maxPrice?: number;
+    category?: string;
+  }) => {
+    // Update the filters state and trigger the search immediately
+    setFilters(newFilters);
+  };
+
   return (
     <div className="flex flex-row min-h-screen py-2 bg-gray-100 pt-24">
       {/* Filter Div */}
       <div className="w-1/4 bg-white shadow-md rounded-lg p-6">
-        <Filters onApplyFilters={(newFilters) => setFilters(newFilters)} />
+        <Filters onApplyFilters={handleApplyFilters} />
       </div>
 
       <div className="flex-1 bg-white rounded-lg shadow-md p-10 ml-4">
