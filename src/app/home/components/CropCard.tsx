@@ -10,6 +10,8 @@ interface CropCardProps {
   quantity: number;
   image_url?: string;
   sellerEmail: string;
+  average_rating: number;
+  number_of_ratings: number;
   onClick: (id: number) => void;
 }
 
@@ -21,6 +23,8 @@ export const CropCard: React.FC<CropCardProps> = ({
   quantity,
   image_url,
   sellerEmail,
+  average_rating,
+  number_of_ratings,
   onClick,
 }) => {
   return (
@@ -44,7 +48,29 @@ export const CropCard: React.FC<CropCardProps> = ({
       {/* Content Section */}
       <div className="p-4">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold text-gray-800">{name}</h2>
+          <div className="flex flex-col gap-4">
+            <h2 className="text-lg font-semibold text-gray-800">{name}</h2>
+            <div className="flex items-center gap-2">
+              {average_rating < 3 && (
+                <span className="text-sm font-semibold text-red-600">
+                  {average_rating}/5
+                </span>
+              )}
+              {average_rating >= 3 && average_rating < 4 && (
+                <span className="text-sm font-semibold text-orange-600">
+                  {average_rating}/5
+                </span>
+              )}
+              {average_rating > 3 && (
+                <span className="text-sm font-semibold text-green-600">
+                  {average_rating}/5
+                </span>
+              )}
+              <span className="text-sm text-gray-600">
+                ({number_of_ratings})
+              </span>
+            </div>
+          </div>
           <div className="flex flex-col items-end">
             <span className="text-lg font-semibold text-green-600">
               ₹{price}
@@ -67,11 +93,7 @@ export const CropCard: React.FC<CropCardProps> = ({
       </div>
 
       {/* Hover Action */}
-      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-        <span className="bg-green-600 text-white px-4 py-2 rounded-full font-medium shadow-lg">
-          View Details
-        </span>
-      </div>
+      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100"></div>
     </div>
   );
 };

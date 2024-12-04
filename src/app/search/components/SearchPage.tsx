@@ -25,6 +25,8 @@ export default function SearchPage() {
     user: {
       email: string;
     };
+    average_rating: number;
+    number_of_ratings: number;
   }
 
   const [query, setQuery] = useState<string | null>(null);
@@ -127,9 +129,10 @@ export default function SearchPage() {
                 description={crop.description}
                 price={crop.price}
                 quantity={crop.quantity}
-                image_url={crop.image_url}
-                sellerEmail={crop.user.email}
+                average_rating={crop.average_rating}
+                number_of_ratings={crop.number_of_ratings}
                 onClick={() => handleCardClick(crop.id)}
+                sellerEmail={crop.user.email}
               />
             ))}
           </div>

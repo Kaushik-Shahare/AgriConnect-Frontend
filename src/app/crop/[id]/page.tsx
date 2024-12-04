@@ -7,6 +7,7 @@ import { useConstants } from "@/context/ConstantsContext";
 import { useAuth } from "@/context/AuthContext";
 import { SellerDetailsCard } from "../components/SellerDetails";
 import { OtherGoods } from "../components/OtherGoods";
+import Ratings from "../components/Ratings";
 import Loading from "@/components/Loading";
 
 interface CropDetail {
@@ -16,6 +17,8 @@ interface CropDetail {
   price: number;
   quantity: number;
   image_url?: string;
+  average_rating: number;
+  number_of_ratings: number;
   user: {
     email: string;
     id: number;
@@ -177,6 +180,26 @@ export default function CropDetailPage() {
           {/* Right side: Details */}
           <div className="md:w-1/2 p-4">
             <h2 className="text-2xl md:text-3xl font-bold">{crop.name}</h2>
+            <div className="flex gap-4 items-center mt-2">
+              {crop.average_rating < 3 && (
+                <span className="text-md font-bold text-red-600">
+                  {crop.average_rating}/5
+                </span>
+              )}
+              {crop.average_rating >= 3 && crop.average_rating < 4 && (
+                <span className="text-md font-bold text-orange-600">
+                  {crop.average_rating}/5
+                </span>
+              )}
+              {crop.average_rating > 3 && (
+                <span className="text-md font-bold text-green-600">
+                  {crop.average_rating}/5
+                </span>
+              )}
+              <p className="text-lg text-gray-700">
+                ({crop.number_of_ratings})
+              </p>
+            </div>
             <p className="mt-2 text-gray-700">{crop.description}</p>
             <p className="mt-4 text-xl text-blue-600">
               Price: ₹{crop.price} per kg
@@ -230,6 +253,10 @@ export default function CropDetailPage() {
 
       <div className="pt-5">
         <OtherGoods farmerId={crop.user.id} currentCropId={crop.id} />
+      </div>
+
+      <div className="pt-5">
+        <Ratings cropId={crop.id} />
       </div>
     </div>
   );

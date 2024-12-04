@@ -27,6 +27,8 @@ export const OtherGoods: React.FC<OtherGoodsProps> = ({
     user: {
       email: string;
     };
+    average_rating?: number;
+    number_of_ratings?: number;
   }
 
   const [otherGoods, setOtherGoods] = useState<Good[]>([]);
@@ -115,6 +117,8 @@ export const OtherGoods: React.FC<OtherGoodsProps> = ({
                     quantity={good.quantity}
                     image_url={good.image_url}
                     sellerEmail={good.user.email}
+                    average_rating={good.average_rating || 0}
+                    number_of_ratings={good.number_of_ratings || 0}
                     onClick={() => handleClick(good.id)}
                   />
                 </div>

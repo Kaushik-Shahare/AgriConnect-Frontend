@@ -22,6 +22,8 @@ export default function HomePage() {
     price: number;
     quantity: number;
     image_url?: string;
+    average_rating?: number;
+    number_of_ratings?: number;
   }
 
   const [crops, setCrops] = useState<Crop[]>([]);
@@ -135,6 +137,8 @@ export default function HomePage() {
                 quantity={crop.quantity}
                 image_url={crop.image_url}
                 sellerEmail={crop.user.email}
+                average_rating={crop.average_rating ?? 0}
+                number_of_ratings={crop.number_of_ratings ?? 0}
                 onClick={() => handleCardClick(crop.id)}
               />
             </div>
