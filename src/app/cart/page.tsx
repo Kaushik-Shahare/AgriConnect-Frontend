@@ -128,6 +128,38 @@ const CartPage: React.FC = () => {
     }
   };
 
+  const RemoveCartItem = (id: number) => {
+    axios
+      .delete(`${BACKEND_URL}/api/cart/remove-from-cart/${id}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        setCartItems(cartItems.filter((item) => item.id !== id));
+
+        console.log(response);
+      })
+      .catch((error) => {
+        console.error("Error deleting crop:", error);
+      });
+  };
+
+  const handleClearCart = () => {
+    axios
+      .delete(`${BACKEND_URL}/api/cart/clear-cart/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then(() => {
+        setCartItems([]);
+      })
+      .catch((error) => {
+        console.error("Error clearing cart:", error);
+      });
+  };
+
   if (loading) {
     // Render loading spinner
     return <Loading />;
@@ -147,26 +179,38 @@ const CartPage: React.FC = () => {
                 Your cart is empty. Browse items to add to your cart!
               </div>
             ) : (
-              cartItems.map((item) => (
-                <CropCard
-                  key={item.id}
-                  id={item.crop.id}
-                  name={item.crop.name}
-                  description={
-                    item.crop.description || "No description available"
-                  }
-                  price={item.crop.price}
-                  quantity={item.quantity}
-                  image_url={item.crop.image_url || ""}
-                  onClick={handleCardClick}
-                  onIncreaseQuantity={() =>
-                    handleIncreaseQuantity(item.id, item.crop.id)
-                  }
-                  onDecreaseQuantity={() =>
-                    handleDecreaseQuantity(item.id, item.crop.id)
-                  }
-                />
-              ))
+              <div className="flex flex-col">
+                <div className="w-full relative h-[2.5rem]">
+                  <button
+                    className="text-red-600 py-2 rounded-lg hover:text-red-400 hover:underline absolute right-5"
+                    onClick={handleClearCart}
+                  >
+                    Clear Cart
+                  </button>
+                </div>
+                {cartItems.map((item) => (
+                  <CropCard
+                    cartItemId={item.id}
+                    key={item.id}
+                    id={item.crop.id}
+                    name={item.crop.name}
+                    description={
+                      item.crop.description || "No description available"
+                    }
+                    price={item.crop.price}
+                    quantity={item.quantity}
+                    image_url={item.crop.image_url || ""}
+                    onClick={handleCardClick}
+                    onIncreaseQuantity={() =>
+                      handleIncreaseQuantity(item.id, item.crop.id)
+                    }
+                    onDecreaseQuantity={() =>
+                      handleDecreaseQuantity(item.id, item.crop.id)
+                    }
+                    onRemove={() => RemoveCartItem(item.id)}
+                  />
+                ))}
+              </div>
             )}
           </div>
 

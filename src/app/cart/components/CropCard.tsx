@@ -1,9 +1,13 @@
 "use client";
 
 import React from "react";
+import { useAuth } from "@/context/AuthContext";
+import { useConstants } from "@/context/ConstantsContext";
+import axios from "axios";
 
 interface CropCardProps {
   id: number;
+  cartItemId: number;
   name: string;
   description: string;
   price: number;
@@ -12,10 +16,12 @@ interface CropCardProps {
   onClick: (id: number) => void;
   onIncreaseQuantity?: (id: number) => void;
   onDecreaseQuantity?: (id: number) => void;
+  onRemove?: (id: number) => void;
 }
 
 export const CropCard: React.FC<CropCardProps> = ({
   id,
+  cartItemId,
   name,
   description,
   price,
@@ -24,7 +30,11 @@ export const CropCard: React.FC<CropCardProps> = ({
   onClick,
   onIncreaseQuantity,
   onDecreaseQuantity,
+  onRemove,
 }) => {
+  const { token } = useAuth();
+  const { BACKEND_URL } = useConstants();
+
   return (
     <div className="flex items-center gap-4 bg-white border border-gray-300 rounded-lg shadow-md p-4 ">
       {/* Product Image */}
@@ -65,6 +75,12 @@ export const CropCard: React.FC<CropCardProps> = ({
           onClick={() => onIncreaseQuantity && onIncreaseQuantity(id)}
         >
           +
+        </button>
+        <button
+          className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+          onClick={() => onRemove && onRemove(cartItemId)}
+        >
+          Delete
         </button>
       </div>
     </div>
