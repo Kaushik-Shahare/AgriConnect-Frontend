@@ -8,7 +8,7 @@ const ConstantsContext = createContext();
 const ConstantsProvider = ({ children }) => {
   const constants = {
     // BACKEND_URL: "http://localhost:8000",
-    BACKEND_URL: "https://agri-connect-delta.vercel.app",
+    BACKEND_URL: "https://api-agriconnect.kaushikshahare.com",
 
     // Add more constants as needed
   };
