@@ -27,16 +27,19 @@ export default function HomePage() {
   }
 
   const [crops, setCrops] = useState<Crop[]>([]);
+  const [cropsLoading, setCropsLoading] = useState(true); // Separate loading state for crops
   const { BACKEND_URL } = useConstants();
   const { token } = useAuth();
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [pageLoading, setPageLoading] = useState(true); // Loading state for the page
 
   useEffect(() => {
     if (!token) return;
-    setLoading(true);
+    setPageLoading(true);
+
     const fetchCrops = async () => {
       try {
+        setCropsLoading(true);
         const response = await axios.get(`${BACKEND_URL}/api/crop/list/`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -45,17 +48,20 @@ export default function HomePage() {
         setCrops(response.data);
       } catch (error) {
         console.error("Error fetching crops:", error);
+      } finally {
+        setCropsLoading(false);
       }
     };
+
     fetchCrops();
-    setLoading(false);
+    setPageLoading(false);
   }, [token]);
 
   const handleCardClick = (cropId: number) => {
     router.push(`/crop/${cropId}`);
   };
 
-  if (loading) {
+  if (pageLoading) {
     return <Loading />;
   }
 
@@ -123,27 +129,31 @@ export default function HomePage() {
       {/* Featured Crops */}
       <div className="container mx-auto px-6 py-8">
         <h2 className="text-2xl font-semibold mb-4">Featured Crops</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {crops.slice(0, 3).map((crop) => (
-            <div
-              key={crop.id}
-              className="rounded-lg shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition"
-            >
-              <CropCard
-                id={crop.id}
-                name={crop.name}
-                description={crop.description}
-                price={crop.price}
-                quantity={crop.quantity}
-                image_url={crop.image_url}
-                sellerEmail={crop.user.email}
-                average_rating={crop.average_rating ?? 0}
-                number_of_ratings={crop.number_of_ratings ?? 0}
-                onClick={() => handleCardClick(crop.id)}
-              />
-            </div>
-          ))}
-        </div>
+        {cropsLoading ? (
+          <Loading /> // Show the loading component while crops are being fetched
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {crops.slice(0, 3).map((crop) => (
+              <div
+                key={crop.id}
+                className="rounded-lg shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition"
+              >
+                <CropCard
+                  id={crop.id}
+                  name={crop.name}
+                  description={crop.description}
+                  price={crop.price}
+                  quantity={crop.quantity}
+                  image_url={crop.image_url}
+                  sellerEmail={crop.user.email}
+                  average_rating={crop.average_rating ?? 0}
+                  number_of_ratings={crop.number_of_ratings ?? 0}
+                  onClick={() => handleCardClick(crop.id)}
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
