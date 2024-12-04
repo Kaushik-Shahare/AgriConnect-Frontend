@@ -38,46 +38,54 @@ export default function SearchPage() {
   }>({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [previous, setPrevious] = useState<string | null>(null);
+  const [next, setNext] = useState<string | null>(null);
 
-  // Update the query state after the component mounts (client-side only)
   useEffect(() => {
     const queryParam = searchParams.get("query");
     setQuery(queryParam);
   }, [searchParams]);
 
-  const fetchSearchResults = async () => {
+  const fetchSearchResults = async (url?: string) => {
     if (!token) return;
     setLoading(true);
     setError(null);
 
     const params: { [key: string]: any } = {};
 
-    // Include query only if it's not empty
-    if (query) {
-      params.query = query;
-    }
+    if (!url) {
+      // Include query only if it's not empty
+      if (query) {
+        params.query = query;
+      }
 
-    // Include filters only if they are set
-    if (filters.minPrice) {
-      params.min_price = filters.minPrice;
-    }
+      // Include filters only if they are set
+      if (filters.minPrice) {
+        params.min_price = filters.minPrice;
+      }
 
-    if (filters.maxPrice) {
-      params.max_price = filters.maxPrice;
-    }
+      if (filters.maxPrice) {
+        params.max_price = filters.maxPrice;
+      }
 
-    if (filters.category) {
-      params.category = filters.category;
+      if (filters.category) {
+        params.category = filters.category;
+      }
     }
 
     try {
-      const response = await axios.get(`${BACKEND_URL}/api/crop/search/`, {
-        params,
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setSearchResults(response.data);
+      const response = await axios.get(
+        url || `${BACKEND_URL}/api/crop/search/`,
+        {
+          params,
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setSearchResults(response.data.results);
+      setPrevious(response.data.previous);
+      setNext(response.data.next);
     } catch (err) {
       setError("Failed to fetch search results. Please try again.");
       console.error("Error fetching search results:", err);
@@ -86,10 +94,9 @@ export default function SearchPage() {
     }
   };
 
-  // Call search whenever the query, filters or token change
   useEffect(() => {
     fetchSearchResults();
-  }, [query, filters, token]); // Re-fetch results when query or filters change
+  }, [query, filters, token]);
 
   const handleCardClick = (cropId: number) => {
     router.push(`/crop/${cropId}`);
@@ -100,8 +107,13 @@ export default function SearchPage() {
     maxPrice?: number;
     category?: string;
   }) => {
-    // Update the filters state and trigger the search immediately
     setFilters(newFilters);
+  };
+
+  const handlePagination = (url: string | null) => {
+    if (url) {
+      fetchSearchResults(url);
+    }
   };
 
   return (
@@ -120,21 +132,46 @@ export default function SearchPage() {
         ) : error ? (
           <p className="text-center text-red-600">{error}</p>
         ) : searchResults.length > 0 ? (
-          <div className="flex flex-col gap-6">
-            {searchResults.map((crop) => (
-              <CropCard
-                key={crop.id}
-                id={crop.id}
-                name={crop.name}
-                description={crop.description}
-                price={crop.price}
-                quantity={crop.quantity}
-                average_rating={crop.average_rating}
-                number_of_ratings={crop.number_of_ratings}
-                onClick={() => handleCardClick(crop.id)}
-                sellerEmail={crop.user.email}
-              />
-            ))}
+          <div>
+            <div className="flex flex-col gap-6">
+              {searchResults.map((crop) => (
+                <CropCard
+                  key={crop.id}
+                  id={crop.id}
+                  name={crop.name}
+                  description={crop.description}
+                  price={crop.price}
+                  quantity={crop.quantity}
+                  average_rating={crop.average_rating}
+                  number_of_ratings={crop.number_of_ratings}
+                  onClick={() => handleCardClick(crop.id)}
+                  sellerEmail={crop.user.email}
+                />
+              ))}
+            </div>
+            {/* Pagination Controls */}
+            <div className="flex justify-between mt-6">
+              <button
+                disabled={!previous}
+                onClick={() => handlePagination(previous)}
+                className={`px-4 py-2 bg-blue-500 text-white rounded ${
+                  !previous
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-blue-600"
+                }`}
+              >
+                Previous
+              </button>
+              <button
+                disabled={!next}
+                onClick={() => handlePagination(next)}
+                className={`px-4 py-2 bg-blue-500 text-white rounded ${
+                  !next ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+                }`}
+              >
+                Next
+              </button>
+            </div>
           </div>
         ) : (
           <p className="text-center text-gray-600">No results found.</p>
