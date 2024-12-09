@@ -52,7 +52,7 @@ export default function PurchaseHistoryPage() {
     };
 
     fetchPurchaseHistory();
-  }, [token, BACKEND_URL_1]);
+  }, [token, BACKEND_URL]);
 
   if (loading) {
     return <Loading />;
