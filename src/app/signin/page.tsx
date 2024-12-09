@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation"; // Import useRouter for redirection
 import Loading from "@/components/Loading";
 
 export default function SignUp() {
-  const { BACKEND_URL } = useConstants();
+  const { BACKEND_URL_1 } = useConstants();
   //   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,7 +30,7 @@ export default function SignUp() {
     setLoading(true);
 
     try {
-      const response = await axios.post(`${BACKEND_URL}/api/account/login/`, {
+      const response = await axios.post(`${BACKEND_URL_1}/api/account/login/`, {
         email,
         password,
       });

@@ -47,6 +47,7 @@ const PostPage = () => {
   const { BACKEND_URL } = useConstants();
   const DEFAULT_IMAGE_URL = "/images/default_profile.jpg";
   const [loading, setLoading] = useState(true);
+  const [expandedPosts, setExpandedPosts] = useState<number[]>([]);
 
   useEffect(() => {
     if (!token) return;
@@ -190,6 +191,14 @@ const PostPage = () => {
     return `${seconds} seconds ago`;
   };
 
+  const toggleExpandPost = (postId: number) => {
+    setExpandedPosts((prev) =>
+      prev.includes(postId)
+        ? prev.filter((id) => id !== postId)
+        : [...prev, postId]
+    );
+  };
+
   if (loading) {
     return <Loading />;
   }
@@ -197,19 +206,26 @@ const PostPage = () => {
   return (
     <div className="p-4 flex flex-col min-h-screen py-20 bg-gray-100">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6 text-black">Farmer's Posts</h1>
+        <h1 className="text-3xl font-bold mb-6 text-black text-center">
+          Farmer's Posts
+        </h1>
 
-        <div className="mt-6 grid gap-2 grid-cols-1">
+        <div className="mt-6 grid gap-4 grid-cols-1">
           {posts.map((post: Post) => (
             <div
               key={post.id}
-              className="relative border border-gray-600 p-4 rounded"
+              className="relative border border-gray-300 p-4 rounded-lg shadow-lg bg-white"
             >
+              <div className="absolute top-2 right-2">
+                <small className="text-gray-500">
+                  {formatTimeAgo(post.created_at)}
+                </small>
+              </div>
               <div className="flex flex-row items-center p-2">
                 <img
                   src={post.user.profile_image || DEFAULT_IMAGE_URL}
                   alt="Profile"
-                  className="w-8 h-8 rounded-full"
+                  className="w-10 h-10 rounded-full"
                 />
                 <p className="text-sm font-bold text-black ml-2">
                   {post.user.name}
@@ -220,25 +236,25 @@ const PostPage = () => {
                 <img
                   src={post.image_url}
                   alt="Post"
-                  className="w-full object-cover"
+                  className="w-full object-cover rounded-lg mt-2"
                 />
               )}
 
               <div className="p-2">
-                <p className="text-black line-clamp-2">
-                  {post.content.length > 100
-                    ? `${post.content.slice(0, 100)}... `
-                    : post.content}
+                <p className="text-black">
+                  {expandedPosts.includes(post.id)
+                    ? post.content
+                    : post.content.slice(0, 100)}
                   {post.content.length > 100 && (
                     <span
                       className="text-blue-500 cursor-pointer"
-                      onClick={() => alert(post.content)}
+                      onClick={() => toggleExpandPost(post.id)}
                     >
-                      more
+                      {expandedPosts.includes(post.id) ? " less" : "... more"}
                     </span>
                   )}
                 </p>
-                <div className="flex gap-1">
+                <div className="flex gap-1 mt-2">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
@@ -264,21 +280,20 @@ const PostPage = () => {
                     type="text"
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    className="border p-2 w-full"
+                    className="border p-2 w-full rounded-lg"
                     placeholder="Add a comment..."
                   />
                   <button
                     type="submit"
-                    className="bg-blue-500 text-white p-2 rounded"
+                    className="bg-blue-500 text-white p-2 rounded-lg"
                   >
                     Submit
                   </button>
                 </form>
 
-                {/* Button to view comments */}
                 <button
                   onClick={() => {
-                    fetchComments(post.id); // Fetch comments on open
+                    fetchComments(post.id);
                     setSelectedPost(post);
                   }}
                   className="text-xs underline text-black mt-2"
@@ -334,7 +349,7 @@ const PostPage = () => {
               </div>
               <button
                 onClick={() => setSelectedPost(null)}
-                className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+                className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg"
               >
                 Close
               </button>

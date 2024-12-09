@@ -24,7 +24,7 @@ interface Purchase {
 }
 
 export default function PurchaseHistoryPage() {
-  const { BACKEND_URL } = useConstants();
+  const { BACKEND_URL_1 } = useConstants();
   const { token } = useAuth();
   const [purchaseHistory, setPurchaseHistory] = useState<Purchase[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -37,11 +37,14 @@ export default function PurchaseHistoryPage() {
       }
 
       try {
-        const response = await axios.get(`${BACKEND_URL}/api/crop/my-orders/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await axios.get(
+          `${BACKEND_URL_1}/api/crop/my-orders/`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setPurchaseHistory(response.data);
       } catch (error) {
         console.error("Error fetching purchase history:", error);
@@ -52,7 +55,7 @@ export default function PurchaseHistoryPage() {
     };
 
     fetchPurchaseHistory();
-  }, [token, BACKEND_URL]);
+  }, [token, BACKEND_URL_1]);
 
   if (loading) {
     return <Loading />;

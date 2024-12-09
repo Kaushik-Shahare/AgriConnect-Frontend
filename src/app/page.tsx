@@ -1,7 +1,19 @@
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect } from "react";
+import { useConstants } from "@/context/ConstantsContext";
+import axios from "axios";
 
 export default function Home() {
+  const { BACKEND_URL } = useConstants();
+
+  // Dummy API call to start the backend server on Render
+  useEffect(() => {
+    axios.get(`${BACKEND_URL}/`).then((response) => {
+      console.log(response.data);
+    });
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Hero Section */}
