@@ -37,6 +37,7 @@ export const CropCard: React.FC<CropCardProps> = ({
         alt={name}
         className="w-48 h-48 object-cover"
       />
+
       <div className="p-4">
         <h2 className="text-lg font-semibold text-gray-800">{name}</h2>
         <div className="flex items-center gap-2">

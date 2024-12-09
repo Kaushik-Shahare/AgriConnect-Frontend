@@ -146,6 +146,7 @@ export default function SearchPage() {
                   number_of_ratings={crop.number_of_ratings}
                   onClick={() => handleCardClick(crop.id)}
                   sellerEmail={crop.user.email}
+                  image_url={crop.image_url}
                 />
               ))}
             </div>
