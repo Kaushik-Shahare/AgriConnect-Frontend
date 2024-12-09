@@ -78,6 +78,12 @@ const SearchBar: React.FC = () => {
           onChange={handleInputChange}
           onBlur={handleInputBlur}
           onFocus={handleInputFocus}
+          onKeyDown={(e) => {
+            // handleSearch on Enter key press
+            if (e.key === "Enter") {
+              handleSearch();
+            }
+          }}
           className="bg-white w-full h-10 rounded"
           value={searchTerm}
         />
