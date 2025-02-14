@@ -8,7 +8,8 @@ const ConstantsContext = createContext();
 const ConstantsProvider = ({ children }) => {
   const constants = {
     BACKEND_URL: "https://agriconnect-1ast.onrender.com",
-    BACKEND_URL_1: "https://api-agriconnect.kaushikshahare.com",
+    BACKEND_URL_1: "https://agriconnect-1ast.onrender.com",
+    // BACKEND_URL_1: "https://api-agriconnect.kaushikshahare.com",
 
     // Add more constants as needed
   };
