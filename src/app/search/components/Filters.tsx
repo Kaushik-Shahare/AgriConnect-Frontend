@@ -34,11 +34,11 @@ export const Filters: React.FC<FiltersProps> = ({ onApplyFilters }) => {
 
   return (
     <div className="bg-white shadow-lg rounded-lg p-6 w-full max-w-sm">
-      <h2 className="text-xl font-bold mb-4">Filters</h2>
+      <h2 className="text-xl font-bold mb-4 text-black">Filters</h2>
 
       {/* Price Filter */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-800 mb-1">
           Price Range
         </label>
         <div className="flex items-center space-x-2">
@@ -47,7 +47,7 @@ export const Filters: React.FC<FiltersProps> = ({ onApplyFilters }) => {
             placeholder="Min"
             value={minPrice || ""}
             onChange={(e) => setMinPrice(Number(e.target.value))}
-            className="border border-gray-300 rounded-md p-2 w-full"
+            className="border border-gray-300 rounded-md p-2 w-full text-black"
           />
           <span className="text-gray-500">-</span>
           <input
@@ -55,24 +55,24 @@ export const Filters: React.FC<FiltersProps> = ({ onApplyFilters }) => {
             placeholder="Max"
             value={maxPrice || ""}
             onChange={(e) => setMaxPrice(Number(e.target.value))}
-            className="border border-gray-300 rounded-md p-2 w-full"
+            className="border border-gray-300 rounded-md p-2 w-full text-black"
           />
         </div>
       </div>
 
       {/* Category Filter */}
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-800 mb-1">
           Category
         </label>
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          className="border border-gray-300 rounded-md p-2 w-full"
+          className="border border-gray-300 rounded-md p-2 w-full text-black"
         >
           <option value="">All Categories</option>
           {cropCategories.map((cat) => (
-            <option key={cat.value} value={cat.value}>
+            <option key={cat.value} value={cat.value} className="text-black">
               {cat.label}
             </option>
           ))}

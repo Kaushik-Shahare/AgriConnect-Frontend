@@ -13,6 +13,7 @@ interface CropCardProps {
   average_rating: number;
   number_of_ratings: number;
   onClick: (id: number) => void;
+  animationDelay?: number;
 }
 
 export const CropCard: React.FC<CropCardProps> = ({
@@ -26,11 +27,13 @@ export const CropCard: React.FC<CropCardProps> = ({
   average_rating,
   number_of_ratings,
   onClick,
+  animationDelay = 0,
 }) => {
   return (
     <div
       onClick={() => onClick(id)}
-      className="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-lg cursor-pointer relative group"
+      className="bg-white border border-gray-200 rounded-lg shadow-md overflow-hidden transform transition-transform duration-300 hover:scale-105 hover:shadow-2xl cursor-pointer relative group animate-fade-in-up"
+      style={{ animationDelay: `${animationDelay}ms` }}
     >
       {/* Image Section */}
       <div className="relative h-48">

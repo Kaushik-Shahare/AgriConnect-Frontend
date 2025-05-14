@@ -7,6 +7,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { CropCard } from "./components/CropCard";
 import Loading from "@/components/Loading";
+import { motion } from "framer-motion";
 
 const CartPage: React.FC = () => {
   const { token } = useAuth();
@@ -168,14 +169,26 @@ const CartPage: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen py-20 bg-gray-100">
       <div className="max-w-7xl lg:mx-10 sm:mx-4 px-4">
-        <h1 className="text-3xl font-bold mb-6 text-gray-800">Shopping Cart</h1>
+        <motion.h1
+          className="text-3xl font-bold mb-6 text-black"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+        >
+          Shopping Cart
+        </motion.h1>
 
         {/* Cart Items Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 ">
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+        >
           {/* Items */}
           <div className="col-span-2 bg-white p-6 rounded-lg shadow-md">
             {cartItems.length === 0 ? (
-              <div className="text-gray-500 text-center">
+              <div className="text-black text-center">
                 Your cart is empty. Browse items to add to your cart!
               </div>
             ) : (
@@ -216,18 +229,18 @@ const CartPage: React.FC = () => {
 
           {/* Summary Section */}
           <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
+            <h2 className="text-xl font-bold mb-4 text-black">
               Order Summary
             </h2>
-            <div className="flex justify-between text-gray-700 mb-4">
+            <div className="flex justify-between text-black mb-4">
               <span>Subtotal</span>
               <span>₹{totalPrice.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-gray-700 mb-4">
+            <div className="flex justify-between text-black mb-4">
               <span>Tax</span>
               <span>₹{(totalPrice * 0.1).toFixed(2)}</span>
             </div>
-            <div className="flex justify-between text-lg font-bold text-gray-800 mb-4">
+            <div className="flex justify-between text-lg font-bold text-black mb-4">
               <span>Total</span>
               <span>₹{(totalPrice * 1.1).toFixed(2)}</span>
             </div>
@@ -238,7 +251,7 @@ const CartPage: React.FC = () => {
               Proceed to Checkout
             </button>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

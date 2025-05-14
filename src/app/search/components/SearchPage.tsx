@@ -40,6 +40,8 @@ export default function SearchPage() {
   const [error, setError] = useState<string | null>(null);
   const [previous, setPrevious] = useState<string | null>(null);
   const [next, setNext] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [cartErrors, setCartErrors] = useState<{ [cropId: number]: string | null }>({});
 
   useEffect(() => {
     const queryParam = searchParams.get("query");
@@ -116,15 +118,61 @@ export default function SearchPage() {
     }
   };
 
+  const handleAddToCart = async (crop: Crop) => {
+    if (!token) return;
+    setCartErrors((prev) => ({ ...prev, [crop.id]: null }));
+    const quantity = 1; // Always add 1 by default
+    if (quantity > crop.quantity || quantity <= 0) {
+      setCartErrors((prev) => ({ ...prev, [crop.id]: "Invalid quantity selected. Please select a valid amount." }));
+      return;
+    }
+    try {
+      await axios.post(
+        `${BACKEND_URL}/api/cart/add-to-cart/`,
+        { quantity, crop: crop.id },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      router.push("/cart");
+    } catch (error: any) {
+      if (error.response && error.response.data) {
+        const { code } = error.response.data;
+        if (code === "own_crop_error") {
+          setCartErrors((prev) => ({ ...prev, [crop.id]: "You cannot add your own crop to the cart." }));
+        } else if (code === "stock_error") {
+          setCartErrors((prev) => ({ ...prev, [crop.id]: `Insufficient quantity in stock. Available quantity: ${crop.quantity} kg.` }));
+        } else if (code === "invalid_quantity") {
+          setCartErrors((prev) => ({ ...prev, [crop.id]: "Invalid quantity. Quantity must be greater than zero." }));
+        } else {
+          setCartErrors((prev) => ({ ...prev, [crop.id]: "An unexpected error occurred. Please try again." }));
+        }
+      } else {
+        setCartErrors((prev) => ({ ...prev, [crop.id]: "An error occurred while adding to the cart." }));
+      }
+    }
+  };
+
   return (
-    <div className="flex flex-row min-h-screen py-2 bg-gray-100 pt-24">
+    <div className="flex flex-col md:flex-row min-h-screen py-2 bg-gray-100 pt-24">
+      {/* Mobile Filter Toggle */}
+      <div className="md:hidden flex justify-end px-4 mb-2">
+        <button
+          className="bg-primary text-white px-4 py-2 rounded-main shadow hover:bg-primary-dark transition"
+          onClick={() => setShowFilters((prev) => !prev)}
+        >
+          {showFilters ? "Hide Filters" : "Show Filters"}
+        </button>
+      </div>
       {/* Filter Div */}
-      <div className="w-1/4 bg-white shadow-md rounded-lg p-6">
+      <div className={`w-full md:w-1/4 bg-white shadow-main rounded-main p-6 mb-4 md:mb-0 ${showFilters ? '' : 'hidden md:block'}`}> 
         <Filters onApplyFilters={handleApplyFilters} />
       </div>
 
-      <div className="flex-1 bg-white rounded-lg shadow-md p-10 ml-4">
-        <h1 className="text-3xl font-bold text-center mb-6 text-gray-800">
+      <div className="flex-1 bg-white rounded-main shadow-main p-6 md:ml-4">
+        <h1 className="text-3xl font-bold text-center mb-6 text-black">
           Search Results
         </h1>
         {loading ? (
@@ -133,49 +181,66 @@ export default function SearchPage() {
           <p className="text-center text-red-600">{error}</p>
         ) : searchResults.length > 0 ? (
           <div>
-            <div className="flex flex-col gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {searchResults.map((crop) => (
-                <CropCard
-                  key={crop.id}
-                  id={crop.id}
-                  name={crop.name}
-                  description={crop.description}
-                  price={crop.price}
-                  quantity={crop.quantity}
-                  average_rating={crop.average_rating}
-                  number_of_ratings={crop.number_of_ratings}
-                  onClick={() => handleCardClick(crop.id)}
-                  sellerEmail={crop.user.email}
-                  image_url={crop.image_url}
-                />
+                <div key={crop.id} className="rounded-main shadow-main overflow-hidden border border-gray-200 hover:shadow-xl transition bg-white flex flex-col">
+                  <CropCard
+                    id={crop.id}
+                    name={crop.name}
+                    description={crop.description}
+                    price={crop.price}
+                    quantity={crop.quantity}
+                    average_rating={crop.average_rating}
+                    number_of_ratings={crop.number_of_ratings}
+                    onClick={() => handleCardClick(crop.id)}
+                    sellerEmail={crop.user.email}
+                    image_url={crop.image_url}
+                  />
+                  <div className="flex flex-col gap-2 p-4 border-t mt-auto">
+                    <div className="flex justify-between gap-2 items-center">
+                      <button
+                        className="bg-primary text-white px-4 py-2 rounded-main hover:bg-primary-dark transition focus-ring"
+                        onClick={() => handleAddToCart(crop)}
+                      >
+                        Add to Cart
+                      </button>
+                      <button
+                        className="text-primary hover:underline font-medium"
+                        onClick={() => handleCardClick(crop.id)}
+                      >
+                        View Details
+                      </button>
+                    </div>
+                    {cartErrors[crop.id] && (
+                      <p className="text-red-600 text-sm mt-1">{cartErrors[crop.id]}</p>
+                    )}
+                  </div>
+                </div>
               ))}
             </div>
             {/* Pagination Controls */}
-            <div className="flex justify-between mt-6">
+            <div className="flex justify-center gap-4 mt-8">
               <button
                 disabled={!previous}
                 onClick={() => handlePagination(previous)}
-                className={`px-4 py-2 bg-blue-500 text-white rounded ${
-                  !previous
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-blue-600"
-                }`}
+                className={`px-4 py-2 bg-primary text-white rounded-main shadow ${!previous ? "opacity-50 cursor-not-allowed" : "hover:bg-primary-dark"}`}
               >
                 Previous
               </button>
               <button
                 disabled={!next}
                 onClick={() => handlePagination(next)}
-                className={`px-4 py-2 bg-blue-500 text-white rounded ${
-                  !next ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
-                }`}
+                className={`px-4 py-2 bg-primary text-white rounded-main shadow ${!next ? "opacity-50 cursor-not-allowed" : "hover:bg-primary-dark"}`}
               >
                 Next
               </button>
             </div>
           </div>
         ) : (
-          <p className="text-center text-gray-600">No results found.</p>
+          <div className="flex flex-col items-center justify-center py-16">
+            <img src="/images/no-results.svg" alt="No results" className="w-40 h-40 mb-4 opacity-70" />
+            <p className="text-center text-gray-800 text-lg">No results found. Try adjusting your search or filters.</p>
+          </div>
         )}
       </div>
     </div>

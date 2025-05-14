@@ -135,8 +135,8 @@ const UserProfile = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-6 bg-gray-100 pt-20">
-      <div className="bg-white shadow-md rounded-lg p-6 max-w-lg w-full">
-        <h2 className="text-2xl font-bold text-center mb-4">Edit Profile</h2>
+      <div className="bg-white shadow-main rounded-main p-6 max-w-lg w-full">
+        <h2 className="text-2xl font-bold text-center mb-4 text-black">Edit Profile</h2>
 
         <div className="flex flex-col items-center mb-4">
           <img
@@ -154,18 +154,18 @@ const UserProfile = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="email">
+            <label className="block text-gray-800 font-medium" htmlFor="email">
               Email
             </label>
             <input
               type="email"
               value={profile?.email}
               disabled
-              className="w-full border border-gray-300 rounded p-2"
+              className="w-full border border-gray-300 rounded p-2 bg-gray-100 text-gray-700"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="username">
+            <label className="block text-gray-800 font-medium" htmlFor="username">
               Username
             </label>
             <input
@@ -173,11 +173,11 @@ const UserProfile = () => {
               name="username"
               value={profile?.username}
               disabled
-              className="w-full border border-gray-300 rounded p-2"
+              className="w-full border border-gray-300 rounded p-2 bg-gray-100 text-gray-700"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="name">
+            <label className="block text-gray-800 font-medium" htmlFor="name">
               Name
             </label>
             <input
@@ -186,11 +186,11 @@ const UserProfile = () => {
               value={profile?.name}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded p-2"
+              className="w-full border border-gray-300 rounded p-2 text-gray-800"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="phone">
+            <label className="block text-gray-800 font-medium" htmlFor="phone">
               Phone
             </label>
             <input
@@ -199,11 +199,11 @@ const UserProfile = () => {
               value={profile?.phone}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded p-2"
+              className="w-full border border-gray-300 rounded p-2 text-gray-800"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="address">
+            <label className="block text-gray-800 font-medium" htmlFor="address">
               Address
             </label>
             <input
@@ -212,11 +212,11 @@ const UserProfile = () => {
               value={profile?.address}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded p-2"
+              className="w-full border border-gray-300 rounded p-2 text-gray-800"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="city">
+            <label className="block text-gray-800 font-medium" htmlFor="city">
               City
             </label>
             <input
@@ -225,11 +225,11 @@ const UserProfile = () => {
               value={profile?.city}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded p-2"
+              className="w-full border border-gray-300 rounded p-2 text-gray-800"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="state">
+            <label className="block text-gray-800 font-medium" htmlFor="state">
               State
             </label>
             <input
@@ -238,11 +238,11 @@ const UserProfile = () => {
               value={profile?.state}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded p-2"
+              className="w-full border border-gray-300 rounded p-2 text-gray-800"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="country">
+            <label className="block text-gray-800 font-medium" htmlFor="country">
               Country
             </label>
             <input
@@ -251,11 +251,11 @@ const UserProfile = () => {
               value={profile?.country}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded p-2"
+              className="w-full border border-gray-300 rounded p-2 text-gray-800"
             />
           </div>
           <div className="mb-4">
-            <label className="block text-gray-700" htmlFor="zip">
+            <label className="block text-gray-800 font-medium" htmlFor="zip">
               Zip Code
             </label>
             <input
@@ -264,12 +264,12 @@ const UserProfile = () => {
               value={profile?.zip}
               onChange={handleChange}
               required
-              className="w-full border border-gray-300 rounded p-2"
+              className="w-full border border-gray-300 rounded p-2 text-gray-800"
             />
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-500 transition"
+            className="w-full bg-primary text-white py-2 rounded-main hover:bg-primary-dark transition focus-ring"
           >
             Update Profile
           </button>

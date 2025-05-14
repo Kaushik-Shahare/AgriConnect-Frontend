@@ -35,9 +35,11 @@ interface SalesChartProps {
     }>;
   }>;
   period: string;
+  salesGrowth: number;
+  revenueGrowth: number;
 }
 
-const SalesChart: React.FC<SalesChartProps> = ({ productSales, period }) => {
+const SalesChart: React.FC<SalesChartProps> = ({ productSales, period, salesGrowth, revenueGrowth }) => {
   // Prepare data for the bar chart
   const barChartData = {
     labels: productSales.map((product) => product.name),
@@ -126,9 +128,13 @@ const SalesChart: React.FC<SalesChartProps> = ({ productSales, period }) => {
     (label) => quantityMap[label]
   );
 
+  // Helper for badge color
+  const badgeColor = (val: number) =>
+    val > 0 ? "bg-green-100 text-green-700" : val < 0 ? "bg-red-100 text-red-700" : "bg-gray-100 text-gray-700";
+
   return (
-    <div className="flex justify-between gap-8">
-      <div className="w-1/2 bg-white rounded-lg shadow-lg p-2">
+    <div className="flex flex-col gap-8">
+      <div className="bg-white rounded-lg shadow-lg p-4">
         <h3 className="text-lg font-semibold text-black">Product Sales</h3>
         <Bar
           data={barChartData}
@@ -136,18 +142,42 @@ const SalesChart: React.FC<SalesChartProps> = ({ productSales, period }) => {
             responsive: true,
             scales: {
               y: {
-                // Set max value of y-axis to the max quantity sold
                 max: maxQuantitySold,
+                ticks: { color: '#000' },
+                title: { color: '#000' },
               },
+              x: {
+                ticks: { color: '#000' },
+                title: { color: '#000' },
+              },
+            },
+            plugins: {
+              legend: { labels: { color: '#000' } },
+              title: { color: '#000' },
             },
           }}
         />
       </div>
-      <div className="w-1/2 bg-white rounded-lg shadow-lg p-4">
-        <h3 className="text-lg font-semibold text-black">
-          Growth Rate Over Time
-        </h3>
-        <Line data={lineChartData} options={{ responsive: true }} />
+      <div className="bg-white rounded-lg shadow-lg p-4">
+        <div className="flex items-center gap-4 mb-2">
+          <h3 className="text-lg font-semibold text-black mb-0">Growth Rate Over Time</h3>
+          <span className={`px-2 py-1 rounded text-sm font-semibold ${badgeColor(salesGrowth)}`}>Sales: {salesGrowth.toFixed(1)}%</span>
+          <span className={`px-2 py-1 rounded text-sm font-semibold ${badgeColor(revenueGrowth)}`}>Revenue: {revenueGrowth.toFixed(1)}%</span>
+        </div>
+        <Line
+          data={lineChartData}
+          options={{
+            responsive: true,
+            scales: {
+              y: { ticks: { color: '#000' }, title: { color: '#000' } },
+              x: { ticks: { color: '#000' }, title: { color: '#000' } },
+            },
+            plugins: {
+              legend: { labels: { color: '#000' } },
+              title: { color: '#000' },
+            },
+          }}
+        />
       </div>
     </div>
   );

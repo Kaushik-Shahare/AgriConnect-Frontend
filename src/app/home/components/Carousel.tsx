@@ -34,14 +34,13 @@ const Carousel = () => {
         {images.map((image, index) => (
           <div
             key={index}
-            className={`absolute inset-0 w-full h-full transition-opacity duration-700 ease-in-out ${
-              index === activeIndex ? "opacity-100" : "opacity-0"
-            }`}
+            className={`absolute inset-0 w-full h-full transition-all duration-700 ease-in-out \
+              ${index === activeIndex ? "opacity-100 z-10 scale-105 animate-carousel-in" : "opacity-0 z-0 scale-95"}`}
           >
             <img
               src={image}
               alt={`Slide ${index + 1}`}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover rounded-lg shadow-xl transition-transform duration-700"
             />
           </div>
         ))}
@@ -50,14 +49,14 @@ const Carousel = () => {
       {/* Navigation Buttons */}
       <button
         onClick={goToPrevious}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full shadow-lg transition duration-300"
+        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-80 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-125 hover:shadow-blue-400/50 border-2 border-white/20"
         aria-label="Previous Slide"
       >
         ‹
       </button>
       <button
         onClick={goToNext}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-70 text-white p-3 rounded-full shadow-lg transition duration-300"
+        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 hover:bg-opacity-80 text-white p-3 rounded-full shadow-lg transition-all duration-300 hover:scale-125 hover:shadow-blue-400/50 border-2 border-white/20"
         aria-label="Next Slide"
       >
         ›

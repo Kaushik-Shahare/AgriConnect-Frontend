@@ -98,7 +98,7 @@ const AIChatAssistant: React.FC = () => {
           }}
         >
           {open && (
-            <div className="p-[1rem] shadow-xl bg-gray-200 border border-black rounded">
+            <div className="p-[1rem] shadow-xl bg-gray-200 border border-black rounded text-black">
               <div className="flex items-center gap-3">
                 {user?.image ? (
                   <img
@@ -120,16 +120,16 @@ const AIChatAssistant: React.FC = () => {
               <div className="mt-4 max-h-80 overflow-auto border-t border-gray-400 pt-2">
                 {chatHistory.map((entry, index) => (
                   <div key={index} className="mb-3">
-                    <p className="font-semibold">You:</p>
-                    <p className="bg-white p-2 rounded border">{entry.query}</p>
-                    <p className="font-semibold mt-2">AI:</p>
-                    <ReactMarkdown>{entry.response}</ReactMarkdown>
+                    <p className="font-semibold text-gray-800">You:</p>
+                    <p className="bg-white p-2 rounded border text-black">{entry.query}</p>
+                    <p className="font-semibold mt-2 text-gray-800">AI:</p>
+                    <ReactMarkdown className="prose prose-sm text-black">{entry.response}</ReactMarkdown>
                   </div>
                 ))}
                 {loading && (
                   <div className="mb-3">
-                    <p className="font-semibold">AI is typing...</p>
-                    <ReactMarkdown>{currentResponse}</ReactMarkdown>
+                    <p className="font-semibold text-gray-800">AI is typing...</p>
+                    <ReactMarkdown className="prose prose-sm text-black">{currentResponse}</ReactMarkdown>
                   </div>
                 )}
               </div>

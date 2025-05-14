@@ -2,16 +2,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "../context/AuthContext";
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  Button,
-  Menu,
-  MenuItem,
-  IconButton,
-  Box,
-} from "@mui/material";
+import { Menu, MenuItem } from "@mui/material";
 import SearchBar from "./SearchBar";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
@@ -34,118 +25,75 @@ export default function Navbar() {
   };
 
   return (
-    <AppBar position="fixed" sx={{ backgroundColor: "#2d3748" }}>
-      <div className="px-4 sm:px-20">
-        <Toolbar>
-          <div className="flex justify-between w-full items-center">
-            <Typography
-              variant="h6"
-              component="div"
-              sx={{ fontWeight: "bold" }}
-            >
-              <Link
-                href="/home"
-                style={{ textDecoration: "none", color: "white" }}
-              >
-                AgriConnect
+    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur border-b border-gray-200 shadow-main px-4 sm:px-10 py-2">
+      <div className="flex justify-between items-center w-full max-w-7xl mx-auto">
+        <Link href="/home" className="text-2xl font-bold text-black hover:text-primary transition-colors duration-200">
+          AgriConnect
+        </Link>
+        <div className="flex-grow sm:w-1/3 ml-4 hidden md:block">
+          <SearchBar />
+        </div>
+        <div className="flex items-center gap-2 md:gap-4">
+          {!isAuthenticated ? (
+            <>
+              <Link href="/signin">
+                <button className="px-4 py-2 bg-primary text-white rounded-main shadow hover:bg-primary-dark transition-all duration-200 focus-ring">Sign In</button>
               </Link>
-            </Typography>
-            <div className="flex-grow sm:w-1/3 ml-4">
-              <SearchBar />
-            </div>
-            <Box>
-              {!isAuthenticated ? (
-                <>
-                  <Link href="/signin">
-                    <Button
-                      color="inherit"
-                      sx={{ textTransform: "none", margin: 1 }}
-                    >
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link href="/signup">
-                    <Button
-                      color="inherit"
-                      sx={{ textTransform: "none", margin: 1 }}
-                    >
-                      Sign Up
-                    </Button>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-4">
-                    {usertype === "farmer" && (
-                      <Link href="/dashboard">
-                        <Button color="inherit" sx={{ textTransform: "none" }}>
-                          Dashboard
-                        </Button>
-                      </Link>
-                    )}
-                    {usertype === "farmer" && (
-                      <Link href="/post">
-                        <Button color="inherit" sx={{ textTransform: "none" }}>
-                          Posts
-                        </Button>
-                      </Link>
-                    )}
-                    <Link href="/cart">
-                      <FontAwesomeIcon
-                        icon={faShoppingCart}
-                        className="text-xl text-white"
-                      />
-                    </Link>
-                    <Link href="/purchasehistory">
-                      <Button color="inherit" sx={{ textTransform: "none" }}>
-                        My Orders
-                      </Button>
-                    </Link>
-                    <IconButton
-                      onClick={handleMenuClick}
-                      color="inherit"
-                      sx={{
-                        borderRadius: "50%",
-                        "&:hover": { backgroundColor: "#4A5568" },
-                      }}
-                    >
-                      <img
-                        src={
-                          profile_image ||
-                          "https://res.cloudinary.com/dkfdmcxsz/image/upload/v1728890065/h8k9chejvd75xv2ms2dv.png"
-                        }
-                        alt="profile"
-                        className="rounded-full h-10 w-10 border-2 border-white"
-                      />
-                    </IconButton>
-                    <Menu
-                      anchorEl={anchorEl}
-                      open={Boolean(anchorEl)}
-                      onClose={handleMenuClose}
-                      PaperProps={{
-                        style: {
-                          maxHeight: 48 * 4.5 + 8,
-                          width: "20ch",
-                        },
-                      }}
-                    >
-                      <MenuItem onClick={handleMenuClose}>
-                        <Link
-                          href="/profile"
-                          style={{ textDecoration: "none", color: "inherit" }}
-                        >
-                          My Profile
-                        </Link>
-                      </MenuItem>
-                      <MenuItem onClick={handleLogout}>Logout</MenuItem>
-                    </Menu>
-                  </div>
-                </>
+              <Link href="/signup">
+                <button className="px-4 py-2 bg-secondary text-white rounded-main shadow hover:bg-secondary-dark transition-all duration-200 focus-ring">Sign Up</button>
+              </Link>
+            </>
+          ) : (
+            <>
+              {usertype === "farmer" && (
+                <Link href="/dashboard">
+                  <button className="px-3 py-2 text-gray-700 hover:text-primary font-medium rounded focus-ring transition-colors">Dashboard</button>
+                </Link>
               )}
-            </Box>
-          </div>
-        </Toolbar>
+              {usertype === "farmer" && (
+                <Link href="/post">
+                  <button className="px-3 py-2 text-gray-700 hover:text-primary font-medium rounded focus-ring transition-colors">Posts</button>
+                </Link>
+              )}
+              <Link href="/cart">
+                <button className="relative px-3 py-2 text-gray-700 hover:text-secondary rounded focus-ring transition-colors">
+                  <FontAwesomeIcon icon={faShoppingCart} className="text-xl" />
+                </button>
+              </Link>
+              <Link href="/purchasehistory">
+                <button className="px-3 py-2 text-gray-700 hover:text-primary font-medium rounded focus-ring transition-colors">My Orders</button>
+              </Link>
+              <button onClick={handleMenuClick} className="ml-2 focus-ring rounded-full border-2 border-primary hover:border-secondary transition-all">
+                <img
+                  src={profile_image || "https://res.cloudinary.com/dkfdmcxsz/image/upload/v1728890065/h8k9chejvd75xv2ms2dv.png"}
+                  alt="profile"
+                  className="rounded-full h-10 w-10 object-cover"
+                />
+              </button>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                PaperProps={{
+                  style: {
+                    maxHeight: 48 * 4.5 + 8,
+                    width: "20ch",
+                  },
+                }}
+              >
+                <MenuItem onClick={handleMenuClose}>
+                  <Link href="/profile" className="block w-full text-gray-700 hover:text-primary transition-colors">My Profile</Link>
+                </MenuItem>
+                <MenuItem onClick={handleLogout} className="text-danger">Logout</MenuItem>
+              </Menu>
+            </>
+          )}
+        </div>
       </div>
-    </AppBar>
+      {/* Mobile SearchBar */}
+      <div className="block md:hidden mt-2">
+        <SearchBar />
+      </div>
+    </nav>
   );
 }
